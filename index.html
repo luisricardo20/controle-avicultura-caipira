@@ -393,14 +393,14 @@ const supabaseClient = supabase.createClient(
   >
 </div>
 
-<div class="campo-mobile">
+<div class="campo-mobile" id="campoVendaCliente" style="display:none;">
   <label>Cliente</label>
   <input id="vendaCliente" type="text">
 </div>
 
 <div class="campo-mobile">
   <label>Forma de pagamento</label>
-  <select id="vendaPagamento">
+  <select id="vendaPagamento" onchange="alternarClienteVenda()">
     <option value="">Selecione</option>
     <option value="avista">À vista</option>
     <option value="aprazo">A prazo</option>
@@ -526,6 +526,18 @@ function calcularValorVenda() {
 
   document.getElementById("vendaValorTotal").value =
     valorTotal.toFixed(2);
+}
+
+    function alternarClienteVenda() {
+  const pagamento = document.getElementById("vendaPagamento").value;
+  const campoCliente = document.getElementById("campoVendaCliente");
+
+  if (pagamento === "aprazo") {
+    campoCliente.style.display = "flex";
+  } else {
+    campoCliente.style.display = "none";
+    document.getElementById("vendaCliente").value = "";
+  }
 }
    async function registrarVenda() {
 

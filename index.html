@@ -274,12 +274,35 @@ const supabaseClient = supabase.createClient(
     <h3>Registrar Venda</h3>
 
     <label>Produto</label>
-    <select id="vendaProduto">
+    <select id="vendaProduto" onchange="calcularValorVenda()">
       <option value="">Selecione o produto</option>
       <option value="ovos">Ovos</option>
       <option value="frangos">Frangos</option>
       <option value="esterco">Esterco</option>
     </select>
+    <br><br>
+
+<label>Data da venda</label>
+<input id="vendaData" type="date">
+
+<label>Quantidade vendida</label>
+<input id="vendaQuantidade" type="number" min="1" value="1" oninput="calcularValorVenda()">
+
+<label>Valor unitário / dúzia (R$)</label>
+<input id="vendaValorUnitario" type="number" min="0" step="0.01" oninput="calcularValorVenda()">
+
+<label>Valor da venda (R$)</label>
+<input id="vendaValorTotal" type="number" min="0" step="0.01" readonly>
+
+<label>Cliente</label>
+<input id="vendaCliente" type="text">
+
+<label>Forma de pagamento</label>
+<select id="vendaPagamento">
+  <option value="">Selecione</option>
+  <option value="avista">À vista</option>
+  <option value="aprazo">A prazo</option>
+</select>
   </div>
 </section>
 </main>
@@ -300,8 +323,34 @@ if (pagina === "producao") {
   await carregarHistoricoProducao();
   await carregarHistoricoDestinacoes();
 }
+  if (pagina === "vendas") {
+  calcularValorVenda();
 }
-async function cadastrarLote() {
+}
+function calcularValorVenda() {
+
+  const produto =
+    document.getElementById("vendaProduto").value;
+
+  const quantidade =
+    Number(document.getElementById("vendaQuantidade").value) || 0;
+
+  const valorUnitario =
+    Number(document.getElementById("vendaValorUnitario").value) || 0;
+
+  let valorTotal = 0;
+
+  if (produto === "ovos") {
+    const duzias = quantidade / 12;
+    valorTotal = duzias * valorUnitario;
+  } else {
+    valorTotal = quantidade * valorUnitario;
+  }
+
+  document.getElementById("vendaValorTotal").value =
+    valorTotal.toFixed(2);
+}
+    async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();
   const tipo = document.getElementById("loteTipo").value;
   const raca = document.getElementById("loteRaca").value.trim();

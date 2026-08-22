@@ -686,6 +686,34 @@ await atualizarResumoProducao();
     `;
   });
 }
+    async function excluirProducao(id) {
+  const confirmar = confirm(
+    "Deseja realmente excluir este lançamento de produção?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("producao_ovos")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    alert(
+      "Não foi possível excluir este lançamento. " +
+      "Parte desses ovos pode já ter sido destinada."
+    );
+    return;
+  }
+
+  await carregarHistoricoProducao();
+  await atualizarResumoProducao();
+
+  alert("Lançamento excluído com sucesso!");
+}
   </script>
 
 </body>

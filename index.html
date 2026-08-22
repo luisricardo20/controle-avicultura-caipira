@@ -189,6 +189,27 @@ const supabaseClient = supabase.createClient(
 </section>
   <section id="pagina-producao" style="display:none;">
   <h2>Produção de Ovos</h2>
+    <div class="card">
+  <h3>Lançar produção diária</h3>
+
+  <label>Data</label>
+  <input id="producaoData" type="date">
+
+  <label>Lote</label>
+  <select id="producaoLote">
+    <option value="">Selecione o lote</option>
+  </select>
+
+  <label>Quantidade de ovos produzidos</label>
+  <input id="producaoQuantidade" type="number" min="0">
+
+  <label>Ovos quebrados</label>
+  <input id="producaoQuebrados" type="number" min="0" value="0">
+
+  <br><br>
+
+  <button>Lançar produção</button>
+</div>
 </section>
 </main>
   <script>
@@ -201,6 +222,9 @@ document.getElementById("pagina-producao").style.display = "none";
   if (pagina === "lotes") {
     await carregarLotes();
   }
+  if (pagina === "producao") {
+  await carregarLotesProducao();
+}
 }
 async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();
@@ -467,6 +491,31 @@ card.innerHTML = `
   await carregarLotes();
 
   alert("Saída registrada com sucesso!");
+}
+    async function carregarLotesProducao() {
+  const { data: lotes, error } = await supabaseClient
+    .from("lotes")
+    .select("id, nome")
+    .eq("tipo", "poedeiras")
+    .eq("ativo", true)
+    .order("nome");
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao carregar os lotes de poedeiras.");
+    return;
+  }
+
+  const select = document.getElementById("producaoLote");
+
+  select.innerHTML = '<option value="">Selecione o lote</option>';
+
+  lotes.forEach(lote => {
+    const option = document.createElement("option");
+    option.value = lote.id;
+    option.textContent = lote.nome;
+    select.appendChild(option);
+  });
 }
 </script>
 

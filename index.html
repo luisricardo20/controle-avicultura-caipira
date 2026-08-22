@@ -678,6 +678,10 @@ await atualizarResumoProducao();
         Produzidos: ${item.quantidade}<br>
         Quebrados: ${item.quebrados || 0}<br>
         Disponíveis: ${liquido}
+        <br><br>
+<button onclick="excluirProducao('${item.id}')">
+  Excluir
+</button>
       </div>
     `;
   });

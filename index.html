@@ -1335,6 +1335,15 @@ alert("Destinação registrada com sucesso!");
 
   alert("Destinação excluída com sucesso!");
 }
+ document.addEventListener("DOMContentLoaded", async function () {
+
+  await carregarFinanceiro();
+  await carregarHistoricoVendas();
+  await carregarLotes();
+  await carregarHistoricoProducao();
+  await carregarHistoricoDestinacoes();
+
+});
   </script>
 
 </body>

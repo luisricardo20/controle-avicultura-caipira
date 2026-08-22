@@ -124,7 +124,7 @@ const supabaseClient = supabase.createClient(
   <button onclick="mostrarPagina('producao')">Produção</button>
   <button>Chocadeira</button>
   <button onclick="mostrarPagina('vendas')">Vendas</button>
-  <button>Financeiro</button>
+ <button onclick="mostrarPagina('financeiro')">Financeiro</button>
   <button>Relatórios</button>
 </nav>
 
@@ -309,6 +309,31 @@ const supabaseClient = supabase.createClient(
 <button onclick="registrarVenda()">Registrar Venda</button>
   </div>
 </section>
+  <section id="pagina-financeiro" style="display:none;">
+  <h2>Financeiro</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Vendas realizadas</h3>
+      <div class="numero" id="financeiroVendas">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>Recebido</h3>
+      <div class="numero" id="financeiroRecebido">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>A receber</h3>
+      <div class="numero" id="financeiroReceber">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>Despesas</h3>
+      <div class="numero" id="financeiroDespesas">R$ 0,00</div>
+    </div>
+  </div>
+</section>
 </main>
   <script>
 async function mostrarPagina(pagina) {
@@ -316,6 +341,7 @@ async function mostrarPagina(pagina) {
   document.getElementById("pagina-lotes").style.display = "none";
 document.getElementById("pagina-producao").style.display = "none";
   document.getElementById("pagina-vendas").style.display = "none";
+  document.getElementById("pagina-financeiro").style.display = "none";
   document.getElementById("pagina-" + pagina).style.display = "block";
 
   if (pagina === "lotes") {

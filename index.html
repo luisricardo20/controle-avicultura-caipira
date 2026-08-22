@@ -844,8 +844,8 @@ alert("Destinação registrada com sucesso!");
         nomesLotes[item.lote_id] || "Lote";
 
       const data =
-        item.created_at
-          ? new Date(item.created_at)
+        item.criado_em
+          ? new Date(item.criado_em)
               .toLocaleDateString("pt-BR")
           : "-";
 

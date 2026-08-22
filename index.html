@@ -436,7 +436,7 @@ function calcularValorVenda() {
       valor_unitario: valorUnitario,
       valor_total: valorTotal,
       forma_pagamento: pagamento,
-      status: pagamento === "aprazo" ? "pendente" : "pago",
+      status: pagamento === "aprazo" ? "aberto" : "pago",
       valor_recebido: pagamento === "avista" ? valorTotal : 0,
       observacoes: cliente ? "Cliente: " + cliente : null
     });

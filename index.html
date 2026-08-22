@@ -855,10 +855,36 @@ alert("Destinação registrada com sucesso!");
           Data: ${data}<br>
           Destino: ${item.destino}<br>
           Quantidade: ${item.quantidade} ovo(s)
+          <br>
+<button onclick="excluirDestinacao('${item.id}')">Excluir</button>
         </div>
       `;
     })
     .join("");
+}
+ async function excluirDestinacao(id) {
+
+  const confirmar =
+    confirm("Deseja excluir esta destinação?");
+
+  if (!confirmar) return;
+
+  const { error } =
+    await supabaseClient
+      .from("destinacao_ovos")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao excluir a destinação.");
+    return;
+  }
+
+  await atualizarResumoProducao();
+  await carregarHistoricoDestinacoes();
+
+  alert("Destinação excluída com sucesso!");
 }
   </script>
 

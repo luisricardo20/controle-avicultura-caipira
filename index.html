@@ -47,25 +47,31 @@ const supabaseClient = supabase.createClient(
     opacity: 0.9;
   }
 
-  nav {
-    display: flex;
-    gap: 8px;
-    padding: 12px;
-    background: white;
-    border-bottom: 1px solid #ddd;
-    overflow-x: auto;
-  }
+ nav {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-  nav button {
-    border: 0;
-    border-radius: 8px;
-    padding: 11px 15px;
-    background: #e7efe8;
-    color: #244b2b;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+ nav button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 13px;
+  background: #e7efe8;
+  color: #244b2b;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 15px;
+  min-height: 44px;
+}
 
   nav button:hover {
     background: #d7e7d9;

@@ -332,6 +332,35 @@ card.innerHTML = `
     lista.appendChild(card);
   });
 }
+    async function adicionarAves(loteId) {
+  const quantidade = Number(
+    prompt("Quantas aves deseja adicionar?")
+  );
+
+  if (!quantidade || quantidade <= 0) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("movimentacoes_aves")
+    .insert({
+      lote_destino_id: loteId,
+      tipo: "entrada",
+      motivo: "ajuste",
+      quantidade: quantidade,
+      observacoes: "Entrada de aves pelo aplicativo"
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao adicionar aves.");
+    return;
+  }
+
+  await carregarLotes();
+
+  alert("Aves adicionadas com sucesso!");
+}
 </script>
 
 </body>

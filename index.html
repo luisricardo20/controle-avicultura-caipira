@@ -560,12 +560,19 @@ card.innerHTML = `
   const select = document.getElementById("producaoLote");
 
   select.innerHTML = '<option value="">Selecione o lote</option>';
+const selectDestino = document.getElementById("destinoLote");
 
+selectDestino.innerHTML =
+  '<option value="">Selecione o lote</option>';
   lotes.forEach(lote => {
     const option = document.createElement("option");
     option.value = lote.id;
     option.textContent = lote.nome;
     select.appendChild(option);
+    const optionDestino = document.createElement("option");
+optionDestino.value = lote.id;
+optionDestino.textContent = lote.nome;
+selectDestino.appendChild(optionDestino);
   });
 }
 async function lancarProducao() {

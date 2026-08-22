@@ -195,7 +195,7 @@ function mostrarPagina(pagina) {
 
   document.getElementById("pagina-" + pagina).style.display = "block";
 }
-    function cadastrarLote() {
+async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();
   const tipo = document.getElementById("loteTipo").value;
   const raca = document.getElementById("loteRaca").value.trim();
@@ -217,7 +217,46 @@ function mostrarPagina(pagina) {
     return;
   }
 
-  alert("Lote pronto para cadastrar!");
+  const { data: lote, error: erroLote } = await supabaseClient
+    .from("lotes")
+    .insert({
+      nome: nome,
+      tipo: tipo,
+      raca: raca || null,
+      data_inicio: dataInicio,
+      quantidade_atual: 0
+    })
+    .select()
+    .single();
+
+  if (erroLote) {
+    console.error(erroLote);
+    alert("Erro ao cadastrar o lote.");
+    return;
+  }
+
+  const { error: erroMovimento } = await supabaseClient
+    .from("movimentacoes_aves")
+    .insert({
+      lote_destino_id: lote.id,
+      tipo: "entrada",
+      motivo: "ajuste",
+      quantidade: quantidade,
+      observacoes: "Quantidade inicial do lote"
+    });
+
+  if (erroMovimento) {
+    console.error(erroMovimento);
+    alert("Lote criado, mas houve erro ao registrar a quantidade inicial.");
+    return;
+  }
+
+  document.getElementById("loteNome").value = "";
+  document.getElementById("loteRaca").value = "";
+  document.getElementById("loteDataInicio").value = "";
+  document.getElementById("loteQuantidade").value = 0;
+
+  alert("Lote cadastrado com sucesso!");
 }
 </script>
 

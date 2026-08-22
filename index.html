@@ -255,8 +255,54 @@ async function cadastrarLote() {
   document.getElementById("loteRaca").value = "";
   document.getElementById("loteDataInicio").value = "";
   document.getElementById("loteQuantidade").value = 0;
-
+await carregarLotes();
   alert("Lote cadastrado com sucesso!");
+}
+    async function carregarLotes() {
+  const { data: lotes, error } = await supabaseClient
+    .from("lotes")
+    .select("*")
+    .order("data_inicio", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao carregar os lotes.");
+    return;
+  }
+
+  const lista = document.getElementById("listaLotes");
+
+  if (!lotes || lotes.length === 0) {
+    lista.innerHTML = "<p>Nenhum lote cadastrado.</p>";
+    return;
+  }
+
+  lista.innerHTML = "";
+
+  lotes.forEach(lote => {
+    const inicio = new Date(lote.data_inicio + "T00:00:00");
+    const hoje = new Date();
+
+    const diferenca = hoje - inicio;
+    const idadeDias = Math.max(
+      0,
+      Math.floor(diferenca / (1000 * 60 * 60 * 24))
+    );
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginTop = "12px";
+
+    card.innerHTML = `
+      <h3>${lote.nome}</h3>
+      <p><strong>Tipo:</strong> ${lote.tipo || "-"}</p>
+      <p><strong>Raça:</strong> ${lote.raca || "-"}</p>
+      <p><strong>Quantidade:</strong> ${lote.quantidade_atual || 0} aves</p>
+      <p><strong>Idade:</strong> ${idadeDias} dias</p>
+    `;
+
+    lista.appendChild(card);
+  });
 }
 </script>
 

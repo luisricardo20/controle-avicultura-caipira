@@ -150,7 +150,7 @@ const supabaseClient = supabase.createClient(
 
     <div class="card">
       <h3>Resultado</h3>
-      <div class="numero">R$ 0,00</div>
+     <div class="numero" id="dashboardResultado">R$ 0,00</div>
     </div>
   </div>
    </section>
@@ -530,6 +530,14 @@ despesas.forEach(despesa => {
     "R$ " + aReceber.toFixed(2).replace(".", ",");
       document.getElementById("financeiroDespesas").textContent =
   "R$ " + totalDespesas.toFixed(2).replace(".", ",");
+      document.getElementById("financeiroDespesas").textContent =
+  "R$ " + totalDespesas.toFixed(2).replace(".", ",");
+
+const resultado = recebido - totalDespesas;
+
+document.getElementById("dashboardResultado").textContent =
+  "R$ " + resultado.toFixed(2).replace(".", ",");
+}
 }
     async function carregarHistoricoVendas() {
 

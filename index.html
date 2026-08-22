@@ -471,7 +471,7 @@ function calcularValorVenda() {
     totalVendas += Number(venda.valor_total) || 0;
     recebido += Number(venda.valor_recebido) || 0;
 
-    if (venda.status === "pendente") {
+    if (venda.status === "aberto") {
       aReceber +=
         (Number(venda.valor_total) || 0) -
         (Number(venda.valor_recebido) || 0);

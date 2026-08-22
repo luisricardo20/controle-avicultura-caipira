@@ -492,11 +492,23 @@ function calcularValorVenda() {
     alert("Erro ao carregar financeiro.");
     return;
   }
+const { data: despesas, error: erroDespesas } = await supabaseClient
+  .from("despesas")
+  .select("valor");
 
+if (erroDespesas) {
+  console.error(erroDespesas);
+  alert("Erro ao carregar despesas.");
+  return;
+}
   let totalVendas = 0;
   let recebido = 0;
   let aReceber = 0;
+let totalDespesas = 0;
 
+despesas.forEach(despesa => {
+  totalDespesas += Number(despesa.valor) || 0;
+});
   vendas.forEach(venda => {
     totalVendas += Number(venda.valor_total) || 0;
     recebido += Number(venda.valor_recebido) || 0;
@@ -516,6 +528,8 @@ function calcularValorVenda() {
 
   document.getElementById("financeiroReceber").textContent =
     "R$ " + aReceber.toFixed(2).replace(".", ",");
+      document.getElementById("financeiroDespesas").textContent =
+  "R$ " + totalDespesas.toFixed(2).replace(".", ",");
 }
     async function carregarHistoricoVendas() {
 

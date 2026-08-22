@@ -229,6 +229,30 @@ const supabaseClient = supabase.createClient(
   <button onclick="lancarProducao()">Lançar produção</button>
 </div>
 <div class="card" style="margin-top:15px;">
+  <h3>Destinar ovos</h3>
+
+  <label>Lote de origem</label>
+  <select id="destinoLote">
+    <option value="">Selecione o lote</option>
+  </select>
+
+  <label>Destino</label>
+  <select id="destinoTipo">
+    <option value="">Selecione o destino</option>
+    <option value="chocadeira">Chocadeira</option>
+    <option value="venda">Venda</option>
+    <option value="consumo">Consumo</option>
+    <option value="perda">Perda</option>
+  </select>
+
+  <label>Quantidade de ovos</label>
+  <input id="destinoQuantidade" type="number" min="1">
+
+  <br><br>
+
+  <button>Registrar destinação</button>
+</div>
+    <div class="card" style="margin-top:15px;">
   <h3>Histórico de Produção</h3>
 
   <div id="historicoProducao">

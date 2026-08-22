@@ -340,6 +340,36 @@ const supabaseClient = supabase.createClient(
       <div class="numero" id="financeiroDespesas">R$ 0,00</div>
     </div>
   </div>
+    <div class="card" style="margin-top:20px;">
+  <h3>Registrar Despesa</h3>
+
+  <label>Data</label>
+  <input id="despesaData" type="date">
+
+  <label>Descrição</label>
+  <input id="despesaDescricao" type="text" placeholder="Ex.: Compra de ração">
+
+  <label>Categoria</label>
+  <select id="despesaCategoria">
+    <option value="">Selecione</option>
+    <option value="racao">Ração</option>
+    <option value="medicamentos">Medicamentos</option>
+    <option value="energia">Energia</option>
+    <option value="manutencao">Manutenção</option>
+    <option value="aves">Compra de aves</option>
+    <option value="outros">Outros</option>
+  </select>
+
+  <label>Valor (R$)</label>
+  <input id="despesaValor" type="number" min="0" step="0.01">
+
+  <label>Observações</label>
+  <input id="despesaObservacoes" type="text">
+
+  <br><br>
+
+  <button onclick="registrarDespesa()">Registrar Despesa</button>
+</div>
 </section>
 </main>
   <script>
@@ -560,6 +590,54 @@ function calcularValorVenda() {
   await carregarFinanceiro();
 
   alert("Pagamento registrado com sucesso!");
+}
+   async function registrarDespesa() {
+
+  const data = document.getElementById("despesaData").value;
+  const descricao = document.getElementById("despesaDescricao").value.trim();
+  const categoria = document.getElementById("despesaCategoria").value;
+  const valor = Number(document.getElementById("despesaValor").value);
+  const observacoes = document.getElementById("despesaObservacoes").value.trim();
+
+  if (!data) {
+    alert("Informe a data da despesa.");
+    return;
+  }
+
+  if (!descricao) {
+    alert("Informe a descrição da despesa.");
+    return;
+  }
+
+  if (valor <= 0) {
+    alert("Informe o valor da despesa.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("despesas")
+    .insert({
+      data: data,
+      descricao: descricao,
+      categoria: categoria || null,
+      valor: valor,
+      observacoes: observacoes || null
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao registrar a despesa.");
+    return;
+  }
+
+  alert("Despesa registrada com sucesso!");
+
+  document.getElementById("despesaDescricao").value = "";
+  document.getElementById("despesaCategoria").value = "";
+  document.getElementById("despesaValor").value = "";
+  document.getElementById("despesaObservacoes").value = "";
+
+  await carregarFinanceiro();
 }
     async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

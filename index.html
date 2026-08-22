@@ -250,7 +250,7 @@ const supabaseClient = supabase.createClient(
 
   <br><br>
 
-  <button>Registrar destinação</button>
+  <button onclick="registrarDestinacaoOvos()">Registrar destinação</button>
 </div>
     <div class="card" style="margin-top:15px;">
   <h3>Histórico de Produção</h3>
@@ -744,6 +744,51 @@ await atualizarResumoProducao();
   await atualizarResumoProducao();
 
   alert("Lançamento excluído com sucesso!");
+}
+    async function registrarDestinacaoOvos() {
+
+  const loteId =
+    document.getElementById("destinoLote").value;
+
+  const destino =
+    document.getElementById("destinoTipo").value;
+
+  const quantidade =
+    Number(document.getElementById("destinoQuantidade").value);
+
+  if (!loteId) {
+    alert("Selecione o lote de origem.");
+    return;
+  }
+
+  if (!destino) {
+    alert("Selecione o destino dos ovos.");
+    return;
+  }
+
+  if (!quantidade || quantidade <= 0) {
+    alert("Informe a quantidade de ovos.");
+    return;
+  }
+const { error } = await supabaseClient
+  .from("destinacao_ovos")
+  .insert({
+    lote_id: loteId,
+    destino: destino,
+    quantidade: quantidade
+  });
+
+if (error) {
+  console.error(error);
+  alert("Erro ao registrar a destinação.");
+  return;
+}
+
+document.getElementById("destinoQuantidade").value = "";
+
+await atualizarResumoProducao();
+
+alert("Destinação registrada com sucesso!");
 }
   </script>
 

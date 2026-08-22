@@ -380,10 +380,67 @@ card.innerHTML = `
     motivo = "morte";
   } else if (motivoEscolhido === "2") {
     motivo = "venda";
-  } else if (motivoEscolhido === "3") {
-    alert("A mudança de lote será configurada no próximo passo.");
+} else if (motivoEscolhido === "3") {
+  const { data: lotes, error: erroLotes } = await supabaseClient
+    .from("lotes")
+    .select("id, nome")
+    .neq("id", loteId)
+    .eq("ativo", true)
+    .order("nome");
+
+  if (erroLotes) {
+    console.error(erroLotes);
+    alert("Erro ao carregar os lotes de destino.");
     return;
-  } else {
+  }
+
+  if (!lotes || lotes.length === 0) {
+    alert("Não existe outro lote disponível para receber as aves.");
+    return;
+  }
+
+  let mensagem = "Escolha o lote de destino:\n\n";
+
+  lotes.forEach((lote, indice) => {
+    mensagem += `${indice + 1} = ${lote.nome}\n`;
+  });
+
+  const escolha = Number(prompt(mensagem));
+
+  if (
+    !escolha ||
+    escolha < 1 ||
+    escolha > lotes.length
+  ) {
+    alert("Lote de destino inválido.");
+    return;
+  }
+
+  const loteDestino = lotes[escolha - 1];
+
+  const { error: erroTransferencia } = await supabaseClient
+    .from("movimentacoes_aves")
+    .insert({
+      lote_origem_id: loteId,
+      lote_destino_id: loteDestino.id,
+      tipo: "transferencia",
+      motivo: "mudanca_lote",
+      quantidade: quantidade,
+      observacoes: "Mudança de lote pelo aplicativo"
+    });
+
+  if (erroTransferencia) {
+    console.error(erroTransferencia);
+    alert("Erro ao transferir as aves.");
+    return;
+  }
+
+  await carregarLotes();
+
+  alert("Aves transferidas com sucesso!");
+  return;
+}
+  else {
     alert("Motivo inválido.");
     return;
   }

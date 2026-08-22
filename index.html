@@ -487,7 +487,15 @@ document.getElementById("pagina-producao").style.display = "none";
   document.getElementById("pagina-vendas").style.display = "none";
   document.getElementById("pagina-financeiro").style.display = "none";
   document.getElementById("pagina-" + pagina).style.display = "block";
-  
+  document.querySelectorAll("nav button").forEach(function(botao) {
+  botao.classList.remove("ativo");
+
+  const acao = botao.getAttribute("onclick") || "";
+
+  if (acao.includes("'" + pagina + "'")) {
+    botao.classList.add("ativo");
+  }
+});
 if (pagina === "dashboard") {
   await atualizarResumoProducao();
   await carregarFinanceiro();

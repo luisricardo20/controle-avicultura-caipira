@@ -299,11 +299,14 @@ const supabaseClient = supabase.createClient(
 <div class="card" style="margin-top:15px;">
   <h3>Destinar ovos</h3>
 
+ <div class="campo-mobile">
   <label>Lote de origem</label>
   <select id="destinoLote">
     <option value="">Selecione o lote</option>
   </select>
+</div>
 
+<div class="campo-mobile">
   <label>Destino</label>
   <select id="destinoTipo">
     <option value="">Selecione o destino</option>
@@ -312,11 +315,12 @@ const supabaseClient = supabase.createClient(
     <option value="consumo">Consumo</option>
     <option value="perda">Perda</option>
   </select>
+</div>
 
+<div class="campo-mobile">
   <label>Quantidade de ovos</label>
   <input id="destinoQuantidade" type="number" min="1">
-
-  <br><br>
+</div>
 
   <button onclick="registrarDestinacaoOvos()">Registrar destinação</button>
 </div>

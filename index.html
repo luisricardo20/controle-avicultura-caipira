@@ -208,7 +208,7 @@ const supabaseClient = supabase.createClient(
 
   <br><br>
 
-  <button>Lançar produção</button>
+  <button onclick="lancarProducao()">Lançar produção</button>
 </div>
 </section>
 </main>
@@ -517,7 +517,57 @@ card.innerHTML = `
     select.appendChild(option);
   });
 }
-</script>
+async function lancarProducao() {
+  const data = document.getElementById("producaoData").value;
+  const loteId = document.getElementById("producaoLote").value;
+  const quantidade = Number(
+    document.getElementById("producaoQuantidade").value
+  );
+  const quebrados = Number(
+    document.getElementById("producaoQuebrados").value
+  ) || 0;
+
+  if (!data) {
+    alert("Informe a data.");
+    return;
+  }
+
+  if (!loteId) {
+    alert("Selecione o lote.");
+    return;
+  }
+
+  if (quantidade <= 0) {
+    alert("Informe a quantidade de ovos produzidos.");
+    return;
+  }
+
+  if (quebrados < 0 || quebrados > quantidade) {
+    alert("Confira a quantidade de ovos quebrados.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("producao_ovos")
+    .insert({
+      data: data,
+      lote_id: loteId,
+      quantidade: quantidade,
+      quebrados: quebrados
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao lançar a produção.");
+    return;
+  }
+
+  document.getElementById("producaoQuantidade").value = "";
+  document.getElementById("producaoQuebrados").value = 0;
+
+  alert("Produção lançada com sucesso!");
+}
+  </script>
 
 </body>
 </html>

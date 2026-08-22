@@ -297,14 +297,38 @@ await carregarLotes();
     card.className = "card";
     card.style.marginTop = "12px";
 
-    card.innerHTML = `
-      <h3>${lote.nome}</h3>
-      <p><strong>Tipo:</strong> ${lote.tipo || "-"}</p>
-      <p><strong>Raça:</strong> ${lote.raca || "-"}</p>
-      <p><strong>Quantidade:</strong> ${lote.quantidade_atual || 0} aves</p>
-      <p><strong>Idade:</strong> ${idadeDias} dias</p>
-    `;
+card.innerHTML = `
+  <h3>${lote.nome}</h3>
 
+  <p>
+    <strong>Tipo:</strong>
+    ${lote.tipo === "poedeiras" ? "Poedeiras" :
+      lote.tipo === "frangos" ? "Frangos para abate" :
+      lote.tipo === "pintos" ? "Pintos" : "Outros"}
+  </p>
+
+  <p><strong>Raça:</strong> ${lote.raca || "-"}</p>
+
+  <p>
+    <strong>Quantidade atual:</strong>
+    ${lote.quantidade_atual || 0} aves
+  </p>
+
+  <p>
+    <strong>Idade do lote:</strong>
+    ${idadeDias} dias
+  </p>
+
+  <div style="display:flex; gap:8px; margin-top:12px;">
+    <button onclick="adicionarAves('${lote.id}')">
+      + Aves
+    </button>
+
+    <button onclick="retirarAves('${lote.id}')">
+      − Aves
+    </button>
+  </div>
+`;
     lista.appendChild(card);
   });
 }

@@ -259,6 +259,13 @@ const supabaseClient = supabase.createClient(
     <p>Nenhum lançamento encontrado.</p>
   </div>
 </div>
+    <div class="card" style="margin-top:15px;">
+  <h3>Histórico de Destinações</h3>
+
+  <div id="historicoDestinacoes">
+    <p>Nenhuma destinação encontrada.</p>
+  </div>
+</div>
   </section>
 </main>
   <script>
@@ -275,6 +282,7 @@ if (pagina === "producao") {
   await carregarLotesProducao();
   await atualizarResumoProducao();
   await carregarHistoricoProducao();
+  await carregarHistoricoDestinacoes();
 }
 }
 async function cadastrarLote() {
@@ -787,8 +795,70 @@ if (error) {
 document.getElementById("destinoQuantidade").value = "";
 
 await atualizarResumoProducao();
+      await carregarHistoricoDestinacoes();
 
 alert("Destinação registrada com sucesso!");
+}
+    async function carregarHistoricoDestinacoes() {
+
+  const container =
+    document.getElementById("historicoDestinacoes");
+
+  if (!container) return;
+
+  const { data: destinacoes, error } =
+    await supabaseClient
+      .from("destinacao_ovos")
+      .select("*");
+
+  if (error) {
+    console.error(error);
+    container.innerHTML =
+      "<p>Erro ao carregar destinações.</p>";
+    return;
+  }
+
+  if (!destinacoes || destinacoes.length === 0) {
+    container.innerHTML =
+      "<p>Nenhuma destinação encontrada.</p>";
+    return;
+  }
+
+  const { data: lotes } =
+    await supabaseClient
+      .from("lotes")
+      .select("id, nome");
+
+  const nomesLotes = {};
+
+  (lotes || []).forEach(lote => {
+    nomesLotes[lote.id] = lote.nome;
+  });
+
+  container.innerHTML = destinacoes
+    .slice()
+    .reverse()
+    .map(item => {
+
+      const nomeLote =
+        nomesLotes[item.lote_id] || "Lote";
+
+      const data =
+        item.created_at
+          ? new Date(item.created_at)
+              .toLocaleDateString("pt-BR")
+          : "-";
+
+      return `
+        <div style="margin-bottom:15px;">
+          <strong>${nomeLote}</strong><br>
+          Data: ${data}<br>
+          Destino: ${item.destino}<br>
+          Quantidade: ${item.quantidade} ovo(s)
+        </div>
+      `;
+    })
+    .join("");
 }
   </script>
 

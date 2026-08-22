@@ -156,6 +156,36 @@ const supabaseClient = supabase.createClient(
    </section>
   <section id="pagina-lotes" style="display:none;">
   <h2>Lotes</h2>
+
+  <div class="card">
+    <h3>Cadastrar novo lote</h3>
+
+    <label>Nome do lote</label>
+    <input id="loteNome" type="text" placeholder="Ex.: Poedeiras 01">
+
+    <label>Tipo</label>
+    <select id="loteTipo">
+      <option value="poedeiras">Poedeiras</option>
+      <option value="frangos">Frangos para abate</option>
+      <option value="pintos">Pintos</option>
+      <option value="outros">Outros</option>
+    </select>
+
+    <label>Raça</label>
+    <input id="loteRaca" type="text" placeholder="Opcional">
+
+    <label>Data de início</label>
+    <input id="loteDataInicio" type="date">
+
+    <label>Quantidade inicial de aves</label>
+    <input id="loteQuantidade" type="number" min="0" value="0">
+
+    <br><br>
+
+    <button onclick="cadastrarLote()">Cadastrar lote</button>
+  </div>
+
+  <div id="listaLotes"></div>
 </section>
 </main>
   <script>
@@ -164,6 +194,30 @@ function mostrarPagina(pagina) {
   document.getElementById("pagina-lotes").style.display = "none";
 
   document.getElementById("pagina-" + pagina).style.display = "block";
+}
+    function cadastrarLote() {
+  const nome = document.getElementById("loteNome").value.trim();
+  const tipo = document.getElementById("loteTipo").value;
+  const raca = document.getElementById("loteRaca").value.trim();
+  const dataInicio = document.getElementById("loteDataInicio").value;
+  const quantidade = Number(document.getElementById("loteQuantidade").value);
+
+  if (!nome) {
+    alert("Digite o nome do lote.");
+    return;
+  }
+
+  if (!dataInicio) {
+    alert("Informe a data de início do lote.");
+    return;
+  }
+
+  if (quantidade <= 0) {
+    alert("Informe a quantidade de aves.");
+    return;
+  }
+
+  alert("Lote pronto para cadastrar!");
 }
 </script>
 

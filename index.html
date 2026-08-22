@@ -121,7 +121,7 @@ const supabaseClient = supabase.createClient(
 <nav>
   <button onclick="mostrarPagina('dashboard')">Dashboard</button>
   <button onclick="mostrarPagina('lotes')">Lotes</button>
-  <button>Produção</button>
+  <button onclick="mostrarPagina('producao')">Produção</button>
   <button>Chocadeira</button>
   <button>Vendas</button>
   <button>Financeiro</button>
@@ -187,12 +187,15 @@ const supabaseClient = supabase.createClient(
 
   <div id="listaLotes"></div>
 </section>
+  <section id="pagina-producao" style="display:none;">
+  <h2>Produção de Ovos</h2>
+</section>
 </main>
   <script>
 async function mostrarPagina(pagina) {
   document.getElementById("pagina-dashboard").style.display = "none";
   document.getElementById("pagina-lotes").style.display = "none";
-
+document.getElementById("pagina-producao").style.display = "none";
   document.getElementById("pagina-" + pagina).style.display = "block";
 
   if (pagina === "lotes") {

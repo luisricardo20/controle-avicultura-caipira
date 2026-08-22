@@ -1336,7 +1336,7 @@ alert("Destinação registrada com sucesso!");
   alert("Destinação excluída com sucesso!");
 }
  document.addEventListener("DOMContentLoaded", async function () {
-
+await atualizarResumoProducao();
   await carregarFinanceiro();
   await carregarHistoricoVendas();
   await carregarLotes();

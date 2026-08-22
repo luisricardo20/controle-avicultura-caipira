@@ -308,7 +308,14 @@ const supabaseClient = supabase.createClient(
     <br><br>
 <button onclick="registrarVenda()">Registrar Venda</button>
   </div>
-</section>
+<div class="card" style="margin-top:15px;">
+  <h3>Histórico de Vendas</h3>
+
+  <div id="historicoVendas">
+    <p>Nenhuma venda encontrada.</p>
+  </div>
+</div>
+  </section>
   <section id="pagina-financeiro" style="display:none;">
   <h2>Financeiro</h2>
 
@@ -356,6 +363,7 @@ if (pagina === "producao") {
 if (pagina === "vendas") {
   await carregarLotesProducao();
   calcularValorVenda();
+  await carregarHistoricoVendas();
 }
   if (pagina === "financeiro") {
   await carregarFinanceiro();
@@ -478,6 +486,51 @@ function calcularValorVenda() {
 
   document.getElementById("financeiroReceber").textContent =
     "R$ " + aReceber.toFixed(2).replace(".", ",");
+}
+    async function carregarHistoricoVendas() {
+
+  const container =
+    document.getElementById("historicoVendas");
+
+  if (!container) return;
+
+  const { data: vendas, error } = await supabaseClient
+    .from("vendas")
+    .select("id, data, produto, quantidade, valor_unitario, valor_total, forma_pagamento, status, observacoes")
+    .order("data", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML =
+      "<p>Erro ao carregar histórico de vendas.</p>";
+    return;
+  }
+
+  if (!vendas || vendas.length === 0) {
+    container.innerHTML =
+      "<p>Nenhuma venda encontrada.</p>";
+    return;
+  }
+
+  container.innerHTML = vendas.map(venda => {
+
+    const cliente =
+      venda.observacoes
+        ? venda.observacoes.replace("Cliente: ", "")
+        : "-";
+
+    return `
+      <div style="margin-bottom:15px;">
+        <strong>${venda.produto || "-"}</strong><br>
+        Data: ${venda.data || "-"}<br>
+        Quantidade: ${venda.quantidade || 0}<br>
+        Valor: R$ ${Number(venda.valor_total || 0).toFixed(2).replace(".", ",")}<br>
+        Cliente: ${cliente}<br>
+        Pagamento: ${venda.forma_pagamento || "-"}<br>
+        Status: ${venda.status || "-"}
+      </div>
+    `;
+  }).join("");
 }
     async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

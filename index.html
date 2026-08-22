@@ -153,6 +153,12 @@ const supabaseClient = supabase.createClient(
      <div class="numero" id="dashboardResultado">R$ 0,00</div>
     </div>
   </div>
+   <div class="card" style="margin-top:15px;">
+  <h3>Aproveitamento por Lote</h3>
+  <div id="dashboardAproveitamento">
+    Nenhuma produção registrada hoje.
+  </div>
+</div>
    </section>
   <section id="pagina-lotes" style="display:none;">
   <h2>Lotes</h2>
@@ -1021,7 +1027,7 @@ await atualizarResumoProducao();
   const { data: producoes, error: erroProducoes } = await supabaseClient
     .from("producao_ovos")
     .select("quantidade, quebrados")
-    .eq("data", hoje);
+    .select("quantidade, quebrados, lote_id")
 
   if (erroProducoes) {
     console.error(erroProducoes);
@@ -1030,12 +1036,56 @@ await atualizarResumoProducao();
 
   let ovosHoje = 0;
   let quebradosHoje = 0;
+const { data: lotesResumo, error: erroLotesResumo } = await supabaseClient
+  .from("lotes")
+  .select("id, nome, quantidade_atual")
+  .eq("tipo", "poedeiras")
+  .eq("ativo", true);
 
+if (erroLotesResumo) {
+  console.error(erroLotesResumo);
+  return;
+}
   producoes.forEach(item => {
     ovosHoje += Number(item.quantidade) || 0;
     quebradosHoje += Number(item.quebrados) || 0;
   });
+const producaoPorLote = {};
 
+producoes.forEach(item => {
+  const loteId = item.lote_id;
+
+  if (!producaoPorLote[loteId]) {
+    producaoPorLote[loteId] = 0;
+  }
+
+  producaoPorLote[loteId] += Number(item.quantidade) || 0;
+});
+
+const containerAproveitamento =
+  document.getElementById("dashboardAproveitamento");
+
+if (containerAproveitamento) {
+
+  containerAproveitamento.innerHTML = lotesResumo
+    .map(lote => {
+
+      const aves = Number(lote.quantidade_atual) || 0;
+      const ovos = producaoPorLote[lote.id] || 0;
+
+      const percentual =
+        aves > 0 ? (ovos / aves) * 100 : 0;
+
+      return `
+        <div style="margin-bottom:10px;">
+          <strong>${lote.nome}</strong><br>
+          ${ovos} ovos / ${aves} aves —
+          <strong>${percentual.toFixed(1)}%</strong>
+        </div>
+      `;
+    })
+    .join("");
+}
   const { data: lotes, error: erroLotes } = await supabaseClient
     .from("lotes")
     .select("ovos_disponiveis")

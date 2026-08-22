@@ -140,7 +140,7 @@ const supabaseClient = supabase.createClient(
 
     <div class="card">
       <h3>Ovos Hoje</h3>
-      <div class="numero">0</div>
+      <div class="numero" id="dashboardOvosHoje">0</div>
     </div>
 
     <div class="card">
@@ -1054,6 +1054,12 @@ if (erroLotesResumo) {
     ovosHoje += Number(item.quantidade) || 0;
     quebradosHoje += Number(item.quebrados) || 0;
   });
+      const dashboardOvosHoje =
+  document.getElementById("dashboardOvosHoje");
+
+if (dashboardOvosHoje) {
+  dashboardOvosHoje.textContent = ovosHoje;
+}
 const producaoPorLote = {};
 
 producoes.forEach(item => {

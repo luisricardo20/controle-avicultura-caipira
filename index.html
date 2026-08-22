@@ -357,6 +357,9 @@ if (pagina === "vendas") {
   await carregarLotesProducao();
   calcularValorVenda();
 }
+  if (pagina === "financeiro") {
+  await carregarFinanceiro();
+}
 }
 function calcularValorVenda() {
 
@@ -438,6 +441,43 @@ function calcularValorVenda() {
 
   alert("Venda registrada com sucesso!");
 
+}
+
+    async function carregarFinanceiro() {
+
+  const { data: vendas, error } = await supabaseClient
+    .from("vendas")
+    .select("valor_total, valor_recebido, status");
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao carregar financeiro.");
+    return;
+  }
+
+  let totalVendas = 0;
+  let recebido = 0;
+  let aReceber = 0;
+
+  vendas.forEach(venda => {
+    totalVendas += Number(venda.valor_total) || 0;
+    recebido += Number(venda.valor_recebido) || 0;
+
+    if (venda.status === "pendente") {
+      aReceber +=
+        (Number(venda.valor_total) || 0) -
+        (Number(venda.valor_recebido) || 0);
+    }
+  });
+
+  document.getElementById("financeiroVendas").textContent =
+    "R$ " + totalVendas.toFixed(2).replace(".", ",");
+
+  document.getElementById("financeiroRecebido").textContent =
+    "R$ " + recebido.toFixed(2).replace(".", ",");
+
+  document.getElementById("financeiroReceber").textContent =
+    "R$ " + aReceber.toFixed(2).replace(".", ",");
 }
     async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

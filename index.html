@@ -386,7 +386,11 @@ document.getElementById("pagina-producao").style.display = "none";
   document.getElementById("pagina-vendas").style.display = "none";
   document.getElementById("pagina-financeiro").style.display = "none";
   document.getElementById("pagina-" + pagina).style.display = "block";
-
+  
+if (pagina === "dashboard") {
+  await atualizarResumoProducao();
+  await carregarFinanceiro();
+}
   if (pagina === "lotes") {
     await carregarLotes();
   }

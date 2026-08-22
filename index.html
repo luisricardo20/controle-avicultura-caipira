@@ -138,6 +138,25 @@ const supabaseClient = supabase.createClient(
   font-size: 16px;
   margin-top: 12px;
 }
+.campo-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.campo-mobile label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.campo-mobile input,
+.campo-mobile select {
+  width: 100%;
+  min-height: 48px;
+  font-size: 16px;
+}  
   }
 </style>
 </head>
@@ -246,23 +265,29 @@ const supabaseClient = supabase.createClient(
     <div class="card">
   <h3>Lançar produção diária</h3>
 
+<div class="campo-mobile">
   <label>Data</label>
   <input id="producaoData" type="date">
+</div>
 
+<div class="campo-mobile">
   <label>Lote</label>
   <select id="producaoLote">
     <option value="">Selecione o lote</option>
   </select>
+</div>
 
+<div class="campo-mobile">
   <label>Quantidade de ovos produzidos</label>
   <input id="producaoQuantidade" type="number" min="0">
+</div>
 
+<div class="campo-mobile">
   <label>Ovos quebrados</label>
   <input id="producaoQuebrados" type="number" min="0" value="0">
+</div>
 
-  <br><br>
-
-  <button onclick="lancarProducao()">Lançar produção</button>
+<button onclick="lancarProducao()">Lançar produção</button>
 </div>
 <div class="card" style="margin-top:15px;">
   <h3>Destinar ovos</h3>

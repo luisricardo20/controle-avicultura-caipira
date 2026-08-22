@@ -228,7 +228,14 @@ const supabaseClient = supabase.createClient(
 
   <button onclick="lancarProducao()">Lançar produção</button>
 </div>
-</section>
+<div class="card" style="margin-top:15px;">
+  <h3>Histórico de Produção</h3>
+
+  <div id="historicoProducao">
+    <p>Nenhum lançamento encontrado.</p>
+  </div>
+</div>
+  </section>
 </main>
   <script>
 async function mostrarPagina(pagina) {
@@ -243,6 +250,7 @@ document.getElementById("pagina-producao").style.display = "none";
 if (pagina === "producao") {
   await carregarLotesProducao();
   await atualizarResumoProducao();
+  await carregarHistoricoProducao();
 }
 }
 async function cadastrarLote() {
@@ -627,6 +635,52 @@ await atualizarResumoProducao();
   document.getElementById("ovosHoje").textContent = ovosHoje;
   document.getElementById("quebradosHoje").textContent = quebradosHoje;
   document.getElementById("ovosDisponiveis").textContent = disponiveis;
+}
+ async function carregarHistoricoProducao() {
+  const { data: producoes, error } = await supabaseClient
+    .from("producao_ovos")
+    .select(`
+      id,
+      data,
+      quantidade,
+      quebrados,
+      lotes (
+        nome
+      )
+    `)
+    .order("data", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const historico = document.getElementById("historicoProducao");
+
+  if (!producoes || producoes.length === 0) {
+    historico.innerHTML = "<p>Nenhum lançamento encontrado.</p>";
+    return;
+  }
+
+  historico.innerHTML = "";
+
+  producoes.forEach(item => {
+    const liquido =
+      (Number(item.quantidade) || 0) -
+      (Number(item.quebrados) || 0);
+
+    const nomeLote = item.lotes?.nome || "Lote";
+
+    historico.innerHTML += `
+      <div class="card" style="margin-top:10px;">
+        <strong>${nomeLote}</strong><br>
+        Data: ${item.data}<br>
+        Produzidos: ${item.quantidade}<br>
+        Quebrados: ${item.quebrados || 0}<br>
+        Disponíveis: ${liquido}
+      </div>
+    `;
+  });
 }
   </script>
 

@@ -135,7 +135,7 @@ const supabaseClient = supabase.createClient(
   <div class="cards">
     <div class="card">
       <h3>Total de Aves</h3>
-      <div class="numero">0</div>
+      <div class="numero" id="dashboardTotalAves">0</div>
     </div>
 
     <div class="card">
@@ -735,7 +735,11 @@ await carregarLotes();
     alert("Erro ao carregar os lotes.");
     return;
   }
+const totalAves = lotes.reduce((soma, lote) => {
+  return soma + (Number(lote.quantidade_atual) || 0);
+}, 0);
 
+document.getElementById("dashboardTotalAves").textContent = totalAves;
   const lista = document.getElementById("listaLotes");
 
   if (!lotes || lotes.length === 0) {

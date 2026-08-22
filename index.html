@@ -189,6 +189,24 @@ const supabaseClient = supabase.createClient(
 </section>
   <section id="pagina-producao" style="display:none;">
   <h2>Produção de Ovos</h2>
+    <div class="cards" style="margin-bottom:15px;">
+
+  <div class="card">
+    <h3>Ovos Hoje</h3>
+    <div class="numero" id="ovosHoje">0</div>
+  </div>
+
+  <div class="card">
+    <h3>Quebrados Hoje</h3>
+    <div class="numero" id="quebradosHoje">0</div>
+  </div>
+
+  <div class="card">
+    <h3>Ovos Disponíveis</h3>
+    <div class="numero" id="ovosDisponiveis">0</div>
+  </div>
+
+</div>
     <div class="card">
   <h3>Lançar produção diária</h3>
 
@@ -222,8 +240,9 @@ document.getElementById("pagina-producao").style.display = "none";
   if (pagina === "lotes") {
     await carregarLotes();
   }
-  if (pagina === "producao") {
+if (pagina === "producao") {
   await carregarLotesProducao();
+  await atualizarResumoProducao();
 }
 }
 async function cadastrarLote() {
@@ -566,6 +585,48 @@ async function lancarProducao() {
   document.getElementById("producaoQuebrados").value = 0;
 
   alert("Produção lançada com sucesso!");
+}
+    async function atualizarResumoProducao() {
+  const hoje = new Date().toISOString().split("T")[0];
+
+  const { data: producoes, error: erroProducoes } = await supabaseClient
+    .from("producao_ovos")
+    .select("quantidade, quebrados")
+    .eq("data", hoje);
+
+  if (erroProducoes) {
+    console.error(erroProducoes);
+    return;
+  }
+
+  let ovosHoje = 0;
+  let quebradosHoje = 0;
+
+  producoes.forEach(item => {
+    ovosHoje += Number(item.quantidade) || 0;
+    quebradosHoje += Number(item.quebrados) || 0;
+  });
+
+  const { data: lotes, error: erroLotes } = await supabaseClient
+    .from("lotes")
+    .select("ovos_disponiveis")
+    .eq("tipo", "poedeiras")
+    .eq("ativo", true);
+
+  if (erroLotes) {
+    console.error(erroLotes);
+    return;
+  }
+
+  let disponiveis = 0;
+
+  lotes.forEach(lote => {
+    disponiveis += Number(lote.ovos_disponiveis) || 0;
+  });
+
+  document.getElementById("ovosHoje").textContent = ovosHoje;
+  document.getElementById("quebradosHoje").textContent = quebradosHoje;
+  document.getElementById("ovosDisponiveis").textContent = disponiveis;
 }
   </script>
 

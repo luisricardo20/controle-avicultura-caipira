@@ -303,6 +303,8 @@ const supabaseClient = supabase.createClient(
   <option value="avista">À vista</option>
   <option value="aprazo">A prazo</option>
 </select>
+    <br><br>
+<button onclick="registrarVenda()">Registrar Venda</button>
   </div>
 </section>
 </main>
@@ -349,6 +351,64 @@ function calcularValorVenda() {
 
   document.getElementById("vendaValorTotal").value =
     valorTotal.toFixed(2);
+}
+   async function registrarVenda() {
+
+  const data = document.getElementById("vendaData").value;
+  const produto = document.getElementById("vendaProduto").value;
+  const quantidade = Number(document.getElementById("vendaQuantidade").value);
+  const valorUnitario = Number(document.getElementById("vendaValorUnitario").value);
+  const valorTotal = Number(document.getElementById("vendaValorTotal").value);
+  const cliente = document.getElementById("vendaCliente").value.trim();
+  const pagamento = document.getElementById("vendaPagamento").value;
+
+  if (!data) {
+    alert("Informe a data da venda.");
+    return;
+  }
+
+  if (!produto) {
+    alert("Selecione o produto.");
+    return;
+  }
+
+  if (quantidade <= 0) {
+    alert("Informe a quantidade vendida.");
+    return;
+  }
+
+  if (valorUnitario <= 0) {
+    alert("Informe o valor.");
+    return;
+  }
+
+  if (!pagamento) {
+    alert("Selecione a forma de pagamento.");
+    return;
+  }
+
+     const { error } = await supabaseClient
+    .from("vendas")
+    .insert({
+      data: data,
+      produto: produto,
+      quantidade: quantidade,
+      valor_unitario: valorUnitario,
+      valor_total: valorTotal,
+      forma_pagamento: pagamento,
+      status: pagamento === "aprazo" ? "pendente" : "pago",
+      valor_recebido: pagamento === "avista" ? valorTotal : 0,
+      observacoes: cliente ? "Cliente: " + cliente : null
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao registrar a venda.");
+    return;
+  }
+
+  alert("Venda registrada com sucesso!");
+
 }
     async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

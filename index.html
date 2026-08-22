@@ -361,6 +361,53 @@ card.innerHTML = `
 
   alert("Aves adicionadas com sucesso!");
 }
+    async function retirarAves(loteId) {
+  const quantidade = Number(
+    prompt("Quantas aves deseja retirar?")
+  );
+
+  if (!quantidade || quantidade <= 0) {
+    return;
+  }
+
+  const motivoEscolhido = prompt(
+    "Digite o motivo da saída:\n1 = Morte\n2 = Venda\n3 = Mudança de lote"
+  );
+
+  let motivo = "";
+
+  if (motivoEscolhido === "1") {
+    motivo = "morte";
+  } else if (motivoEscolhido === "2") {
+    motivo = "venda";
+  } else if (motivoEscolhido === "3") {
+    alert("A mudança de lote será configurada no próximo passo.");
+    return;
+  } else {
+    alert("Motivo inválido.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("movimentacoes_aves")
+    .insert({
+      lote_origem_id: loteId,
+      tipo: "saida",
+      motivo: motivo,
+      quantidade: quantidade,
+      observacoes: "Saída de aves pelo aplicativo"
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao retirar aves.");
+    return;
+  }
+
+  await carregarLotes();
+
+  alert("Saída registrada com sucesso!");
+}
 </script>
 
 </body>

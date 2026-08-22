@@ -528,9 +528,39 @@ function calcularValorVenda() {
         Cliente: ${cliente}<br>
         Pagamento: ${venda.forma_pagamento || "-"}<br>
         Status: ${venda.status || "-"}
+        ${venda.status === "aberto"
+  ? `<br><button onclick="marcarVendaComoPaga('${venda.id}', ${Number(venda.valor_total || 0)})">Marcar como pago</button>`
+  : ""
+}
       </div>
     `;
   }).join("");
+}
+    async function marcarVendaComoPaga(id, valorTotal) {
+
+  const confirmar =
+    confirm("Confirmar o recebimento desta venda?");
+
+  if (!confirmar) return;
+
+  const { error } = await supabaseClient
+    .from("vendas")
+    .update({
+      status: "pago",
+      valor_recebido: valorTotal
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao registrar o recebimento.");
+    return;
+  }
+
+  await carregarHistoricoVendas();
+  await carregarFinanceiro();
+
+  alert("Pagamento registrado com sucesso!");
 }
     async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

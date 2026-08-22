@@ -795,11 +795,13 @@ await atualizarResumoProducao();
     return;
   }
 
-  let disponiveis = 0;
+const { data: estoque } = await supabaseClient
+  .from("estoque_ovos")
+  .select("quantidade")
+  .eq("id", 1)
+  .single();
 
-  lotes.forEach(lote => {
-    disponiveis += Number(lote.ovos_disponiveis) || 0;
-  });
+const disponiveis = Number(estoque?.quantidade) || 0;
 
   document.getElementById("ovosHoje").textContent = ovosHoje;
   document.getElementById("quebradosHoje").textContent = quebradosHoje;

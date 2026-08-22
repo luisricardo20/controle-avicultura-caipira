@@ -14,10 +14,145 @@ const supabaseClient = supabase.createClient(
   SUPABASE_KEY
 );
   </script>
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background: #f4f6f4;
+    color: #243126;
+  }
+
+  header {
+    background: #2f6b3b;
+    color: white;
+    padding: 20px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  header p {
+    margin: 5px 0 0;
+    opacity: 0.9;
+  }
+
+  nav {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+  }
+
+  nav button {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 15px;
+    background: #e7efe8;
+    color: #244b2b;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  nav button:hover {
+    background: #d7e7d9;
+  }
+
+  main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 18px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0001;
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 15px;
+    color: #607064;
+  }
+
+  .numero {
+    margin-top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2f6b3b;
+  }
+
+  @media (max-width: 800px) {
+    .cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 500px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 </head>
 <body>
 
-  <h1>Controle Avicultura Caipira</h1>
+ <header>
+  <h1>🐔 Controle Avicultura Caipira</h1>
+  <p>Gestão completa da criação</p>
+</header>
+
+<nav>
+  <button>Dashboard</button>
+  <button>Lotes</button>
+  <button>Produção</button>
+  <button>Chocadeira</button>
+  <button>Vendas</button>
+  <button>Financeiro</button>
+  <button>Relatórios</button>
+</nav>
+
+<main>
+  <h2>Dashboard</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Total de Aves</h3>
+      <div class="numero">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Ovos Hoje</h3>
+      <div class="numero">0</div>
+    </div>
+
+    <div class="card">
+      <h3>Contas a Receber</h3>
+      <div class="numero">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>Resultado</h3>
+      <div class="numero">R$ 0,00</div>
+    </div>
+  </div>
+</main> 
 
 </body>
 </html>

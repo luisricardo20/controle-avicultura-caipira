@@ -189,11 +189,15 @@ const supabaseClient = supabase.createClient(
 </section>
 </main>
   <script>
-function mostrarPagina(pagina) {
+async function mostrarPagina(pagina) {
   document.getElementById("pagina-dashboard").style.display = "none";
   document.getElementById("pagina-lotes").style.display = "none";
 
   document.getElementById("pagina-" + pagina).style.display = "block";
+
+  if (pagina === "lotes") {
+    await carregarLotes();
+  }
 }
 async function cadastrarLote() {
   const nome = document.getElementById("loteNome").value.trim();

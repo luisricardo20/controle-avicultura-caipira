@@ -201,7 +201,7 @@ const supabaseClient = supabase.createClient(
   <button onclick="mostrarPagina('dashboard')">Dashboard</button>
   <button onclick="mostrarPagina('lotes')">Lotes</button>
   <button onclick="mostrarPagina('producao')">Produção</button>
-  <button>Chocadeira</button>
+  <button onclick="mostrarPagina('chocadeira')">Chocadeira</button>
   <button onclick="mostrarPagina('vendas')">Vendas</button>
  <button onclick="mostrarPagina('financeiro')">Financeiro</button>
   <button onclick="mostrarPagina('relatorios')">Relatórios</button>
@@ -380,6 +380,52 @@ const supabaseClient = supabase.createClient(
   </div>
 </div>
   </section>
+
+  <section id="pagina-chocadeira" style="display:none;">
+  <h2>Controle de Incubação</h2>
+
+  <div class="card">
+    <h3>Nova Incubação</h3>
+
+    <div class="campo-mobile">
+      <label>Data inicial</label>
+      <input id="incubacaoData" type="date">
+    </div>
+<div class="campo-mobile">
+  <label>Lote de origem</label>
+  <select id="incubacaoLote">
+    <option value="">Selecione o lote</option>
+  </select>
+</div>
+    <div class="campo-mobile">
+      <label>Quantidade de ovos</label>
+      <input id="incubacaoQuantidade" type="number" min="1">
+    </div>
+
+    <div class="campo-mobile">
+      <label>Previsão de eclosão</label>
+      <input id="incubacaoPrevisao" type="date" readonly>
+    </div>
+
+    <button type="button" onclick="registrarIncubacao()">
+      Colocar ovos na chocadeira
+    </button>
+  </div>
+
+  <div class="card" style="margin-top:15px;">
+    <h3>Incubações em andamento</h3>
+    <div id="listaIncubacoes">
+      <p>Nenhuma incubação em andamento.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:15px;">
+    <h3>Histórico da Chocadeira</h3>
+    <div id="historicoIncubacoes">
+      <p>Nenhuma incubação registrada.</p>
+    </div>
+  </div>
+</section>
   <section id="pagina-vendas" style="display:none;">
   <h2>Vendas</h2>
 

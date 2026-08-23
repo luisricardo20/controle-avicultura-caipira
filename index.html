@@ -1448,7 +1448,25 @@ async function registrarIncubacao() {
     return;
   }
 
-  alert("Incubação registrada com sucesso!");
+  const { error: erroDestino } = await supabaseClient
+  .from("destinacao_ovos")
+  .insert({
+    lote_id: loteId,
+    destino: "chocadeira",
+    quantidade: quantidade
+  });
+
+if (erroDestino) {
+  console.error(erroDestino);
+  alert("Incubação registrada, mas houve erro ao descontar os ovos.");
+  return;
+}
+
+await atualizarResumoProducao();
+
+document.getElementById("incubacaoQuantidade").value = "";
+
+alert("Incubação registrada com sucesso!");
 }    
 async function lancarProducao() {
   const data = document.getElementById("producaoData").value;

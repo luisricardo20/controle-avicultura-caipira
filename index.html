@@ -342,6 +342,23 @@ const supabaseClient = supabase.createClient(
 
 <button onclick="lancarProducao()">Lançar produção</button>
 </div>
+    <div class="card" style="margin-top:15px;">
+  <h3>Ajustar estoque de ovos</h3>
+
+  <div class="campo-mobile">
+    <label>Lote</label>
+    <select id="ajusteEstoqueLote">
+      <option value="">Selecione o lote</option>
+    </select>
+  </div>
+
+  <div class="campo-mobile">
+    <label>Quantidade de ovos a acrescentar</label>
+    <input id="ajusteEstoqueQuantidade" type="number" min="1">
+  </div>
+
+  <button onclick="ajustarEstoqueOvos()">Acrescentar ao estoque</button>
+</div>
 <div class="card" style="margin-top:15px;">
   <h3>Destinar ovos</h3>
 
@@ -1396,12 +1413,23 @@ if (selectIncubacao) {
   selectIncubacao.innerHTML =
     '<option value="">Selecione o lote</option>';
 }
- 
+ const selectAjuste = document.getElementById("ajusteEstoqueLote");
+
+if (selectAjuste) {
+  selectAjuste.innerHTML =
+    '<option value="">Selecione o lote</option>';
+}
   lotes.forEach(lote => {
     const option = document.createElement("option");
     option.value = lote.id;
     option.textContent = lote.nome;
     select.appendChild(option);
+    if (selectAjuste && lote.tipo === "poedeiras") {
+  const optionAjuste = document.createElement("option");
+  optionAjuste.value = lote.id;
+  optionAjuste.textContent = lote.nome;
+  selectAjuste.appendChild(optionAjuste);
+}
     const optionDestino = document.createElement("option");
 optionDestino.value = lote.id;
 optionDestino.textContent = lote.nome;
@@ -1414,7 +1442,56 @@ if (selectIncubacao) {
 }
   });
 }
+async function ajustarEstoqueOvos() {
+  const loteId = document.getElementById("ajusteEstoqueLote").value;
+  const quantidade = Number(
+    document.getElementById("ajusteEstoqueQuantidade").value
+  );
 
+  if (!loteId) {
+    alert("Selecione o lote.");
+    return;
+  }
+
+  if (!quantidade || quantidade <= 0) {
+    alert("Informe uma quantidade válida.");
+    return;
+  }
+
+  const { data: lote, error: erroBusca } = await supabaseClient
+    .from("lotes")
+    .select("ovos_disponiveis")
+    .eq("id", loteId)
+    .single();
+
+  if (erroBusca) {
+    console.error(erroBusca);
+    alert("Erro ao consultar o estoque.");
+    return;
+  }
+
+  const estoqueAtual = Number(lote.ovos_disponiveis) || 0;
+  const novoEstoque = estoqueAtual + quantidade;
+
+  const { error } = await supabaseClient
+    .from("lotes")
+    .update({
+      ovos_disponiveis: novoEstoque
+    })
+    .eq("id", loteId);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao ajustar o estoque.");
+    return;
+  }
+
+  document.getElementById("ajusteEstoqueQuantidade").value = "";
+
+  alert("Estoque atualizado com sucesso!");
+
+  await carregarDadosSupabase();
+}
 function alterarOrigemIncubacao() {
   const origem = document.getElementById("incubacaoOrigem").value;
   const blocoLote = document.getElementById("blocoIncubacaoLote");

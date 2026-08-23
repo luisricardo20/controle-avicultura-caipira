@@ -1404,10 +1404,12 @@ if (erroLotesResumo) {
   console.error(erroLotesResumo);
   return;
 }
-  producoes.forEach(item => {
+producoes.forEach(item => {
+  if (item.data === hoje) {
     ovosHoje += Number(item.quantidade) || 0;
     quebradosHoje += Number(item.quebrados) || 0;
-  });
+  }
+});
       const dashboardOvosHoje =
   document.getElementById("dashboardOvosHoje");
 

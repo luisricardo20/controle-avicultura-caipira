@@ -201,7 +201,7 @@ const supabaseClient = supabase.createClient(
   <button onclick="mostrarPagina('dashboard')">Dashboard</button>
   <button onclick="mostrarPagina('lotes')">Lotes</button>
   <button onclick="mostrarPagina('producao')">Produção</button>
-  <button onclick="mostrarPagina('chocadeira'); carregarLotesProducao();">Chocadeira</button>
+  <button onclick="mostrarPagina('chocadeira'); carregarLotesProducao(); carregarIncubacoes();">Chocadeira</button>
   <button onclick="mostrarPagina('vendas')">Vendas</button>
  <button onclick="mostrarPagina('financeiro')">Financeiro</button>
   <button onclick="mostrarPagina('relatorios')">Relatórios</button>
@@ -1809,6 +1809,66 @@ await atualizarResumoProducao();
 
 alert("Destinação registrada com sucesso!");
 }
+async function carregarIncubacoes() {
+  const container = document.getElementById("listaIncubacoes");
+
+  if (!container) return;
+
+  const { data: incubacoes, error } = await supabaseClient
+    .from("incubacoes")
+    .select("id, data_inicial, quantidade_ovos, previsao_eclosao, status")
+    .eq("status", "andamento")
+    .order("data_inicial", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = "<p>Erro ao carregar incubações.</p>";
+    return;
+  }
+
+  if (!incubacoes || incubacoes.length === 0) {
+    container.innerHTML = "<p>Nenhuma incubação em andamento.</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  incubacoes.forEach(item => {
+    const hoje = new Date();
+
+    const partes = item.data_inicial.split("-");
+    const inicio = new Date(
+      Number(partes[0]),
+      Number(partes[1]) - 1,
+      Number(partes[2])
+    );
+
+    const diferenca = hoje - inicio;
+    let dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+
+    if (dias < 0) dias = 0;
+
+    let progresso = (dias / 21) * 100;
+
+    if (progresso > 100) progresso = 100;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginTop = "12px";
+
+    card.innerHTML = `
+      <strong>Incubação</strong><br>
+      Data inicial: ${item.data_inicial}<br>
+      Ovos: ${item.quantidade_ovos}<br>
+      Previsão de eclosão: ${item.previsao_eclosao}<br>
+      Dia da incubação: ${dias} de 21<br>
+      Progresso: <strong>${progresso.toFixed(1)}%</strong>
+    `;
+
+    container.appendChild(card);
+  });
+}
+    
     async function carregarHistoricoDestinacoes() {
 
   const container =

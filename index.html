@@ -399,11 +399,15 @@ const supabaseClient = supabase.createClient(
       <label>Data inicial</label>
       <input id="incubacaoData" type="date" onchange="atualizarPrevisaoEclosao()">
     </div>
-<div class="campo-mobile">
+<div class="campo-mobile" id="blocoIncubacaoLote">
   <label>Lote de origem</label>
   <select id="incubacaoLote">
     <option value="">Selecione o lote</option>
   </select>
+</div>
+    <div class="campo-mobile" id="blocoIncubacaoOrigemExterna" style="display:none;">
+  <label>Origem externa</label>
+  <input id="incubacaoOrigemExterna" type="text" placeholder="Ex.: ovos comprados, outra granja">
 </div>
     <div class="campo-mobile">
       <label>Quantidade de ovos</label>

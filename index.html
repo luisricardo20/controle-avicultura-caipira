@@ -784,7 +784,7 @@ const fim = `${proximoAno}-${String(proximoMes).padStart(2, "0")}-01`;
 // VENDAS DO MÊS
 const { data: vendasMes, error: erroVendas } = await supabaseClient
   .from("vendas")
-  .select("data, valor_total, valor_recebido, status, cliente")
+  .select("data, valor_total, valor_recebido, status, observacoes")
   .gte("data", inicio)
   .lt("data", fim);
 
@@ -850,7 +850,7 @@ document.getElementById("relatorioProducao").textContent =
 // CLIENTES INADIMPLENTES
 const { data: vendasAbertas, error: erroAbertas } = await supabaseClient
   .from("vendas")
-  .select("data, cliente, valor_total, valor_recebido, status")
+  .select("data, observacoes, valor_total, valor_recebido, status")
   .eq("status", "aberto")
   .order("data", { ascending: true });
 
@@ -885,7 +885,7 @@ if (inadimplentes.length === 0) {
 
     container.innerHTML += `
       <div style="padding:12px 0; border-bottom:1px solid #ddd;">
-        <strong>${venda.cliente || "Cliente não informado"}</strong><br>
+        <strong>${(venda.observacoes || "").replace("Cliente: ", "") || "Cliente não informado"}</strong><br>
         Valor em aberto: R$ ${saldo.toFixed(2).replace(".", ",")}<br>
         Dias em atraso: ${dias}
       </div>

@@ -388,6 +388,14 @@ const supabaseClient = supabase.createClient(
     <h3>Nova Incubação</h3>
 
     <div class="campo-mobile">
+  <label>Origem dos ovos</label>
+  <select id="incubacaoOrigem" onchange="alterarOrigemIncubacao()">
+    <option value="propria">Produção própria</option>
+    <option value="externa">Outra origem</option>
+  </select>
+</div>
+
+    <div class="campo-mobile">
       <label>Data inicial</label>
       <input id="incubacaoData" type="date" onchange="atualizarPrevisaoEclosao()">
     </div>

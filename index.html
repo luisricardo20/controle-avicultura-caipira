@@ -176,6 +176,18 @@ const supabaseClient = supabase.createClient(
   margin-top: 8px;
 }
   }
+  .acoes-aves {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.botao-aves {
+  flex: 1;
+  min-height: 52px;
+  font-size: 17px;
+  border-radius: 10px;
+}
 </style>
 </head>
 <body>
@@ -929,12 +941,12 @@ card.innerHTML = `
     ${idadeDias} dias
   </p>
 
-  <div style="display:flex; gap:8px; margin-top:12px;">
-    <button onclick="adicionarAves('${lote.id}')">
+  <div class="acoes-aves">
+   <button class="botao-aves" onclick="adicionarAves('${lote.id}')">
       + Aves
     </button>
 
-    <button onclick="retirarAves('${lote.id}')">
+    <button class="botao-aves" onclick="retirarAves('${lote.id}')">
       − Aves
     </button>
   </div>

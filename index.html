@@ -233,29 +233,37 @@ const supabaseClient = supabase.createClient(
   <div class="card">
     <h3>Cadastrar novo lote</h3>
 
-    <label>Nome do lote</label>
-    <input id="loteNome" type="text" placeholder="Ex.: Poedeiras 01">
+<div class="campo-mobile">
+  <label>Nome do lote</label>
+  <input id="loteNome" type="text" placeholder="Ex.: Poedeiras 01">
+</div>
 
-    <label>Tipo</label>
-    <select id="loteTipo">
-      <option value="poedeiras">Poedeiras</option>
-      <option value="frangos">Frangos para abate</option>
-      <option value="pintos">Pintos</option>
-      <option value="outros">Outros</option>
-    </select>
+<div class="campo-mobile">
+  <label>Tipo</label>
+  <select id="loteTipo">
+    <option value="poedeiras">Poedeiras</option>
+    <option value="frangos">Frangos para abate</option>
+    <option value="pintos">Pintos</option>
+    <option value="outros">Outros</option>
+  </select>
+</div>
 
-    <label>Raça</label>
-    <input id="loteRaca" type="text" placeholder="Opcional">
+<div class="campo-mobile">
+  <label>Raça</label>
+  <input id="loteRaca" type="text" placeholder="Opcional">
+</div>
 
-    <label>Data de início</label>
-    <input id="loteDataInicio" type="date">
+<div class="campo-mobile">
+  <label>Data de início</label>
+  <input id="loteDataInicio" type="date">
+</div>
 
-    <label>Quantidade inicial de aves</label>
-    <input id="loteQuantidade" type="number" min="0" value="0">
+<div class="campo-mobile">
+  <label>Quantidade inicial de aves</label>
+  <input id="loteQuantidade" type="number" min="0" value="0">
+</div>
 
-    <br><br>
-
-    <button onclick="cadastrarLote()">Cadastrar lote</button>
+<button onclick="cadastrarLote()">Cadastrar lote</button>
   </div>
 
   <div id="listaLotes"></div>

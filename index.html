@@ -223,6 +223,16 @@ const supabaseClient = supabase.createClient(
     </div>
 
     <div class="card">
+  <h3>Ovos no Mês</h3>
+  <div class="numero" id="dashboardOvosMes">0</div>
+</div>
+
+<div class="card">
+  <h3>Média de Ovos por Dia</h3>
+  <div class="numero" id="dashboardMediaOvosDia">0</div>
+</div>
+
+    <div class="card">
       <h3>Contas a Receber</h3>
       <div class="numero">R$ 0,00</div>
     </div>
@@ -1404,6 +1414,45 @@ if (erroLotesResumo) {
 
 if (dashboardOvosHoje) {
   dashboardOvosHoje.textContent = ovosHoje;
+}
+      const hojeData = new Date();
+const mesAtual = hojeData.getMonth();
+const anoAtual = hojeData.getFullYear();
+
+let ovosMes = 0;
+const diasComProducao = new Set();
+
+producoes.forEach(item => {
+  const dataProducao = new Date(item.data);
+
+  if (
+    dataProducao.getMonth() === mesAtual &&
+    dataProducao.getFullYear() === anoAtual
+  ) {
+    ovosMes += Number(item.quantidade) || 0;
+
+    diasComProducao.add(item.data);
+  }
+});
+
+const mediaOvosDia =
+  diasComProducao.size > 0
+    ? ovosMes / diasComProducao.size
+    : 0;
+
+const dashboardOvosMes =
+  document.getElementById("dashboardOvosMes");
+
+const dashboardMediaOvosDia =
+  document.getElementById("dashboardMediaOvosDia");
+
+if (dashboardOvosMes) {
+  dashboardOvosMes.textContent = ovosMes;
+}
+
+if (dashboardMediaOvosDia) {
+  dashboardMediaOvosDia.textContent =
+    mediaOvosDia.toFixed(1);
 }
 const producaoPorLote = {};
 

@@ -204,7 +204,7 @@ const supabaseClient = supabase.createClient(
   <button>Chocadeira</button>
   <button onclick="mostrarPagina('vendas')">Vendas</button>
  <button onclick="mostrarPagina('financeiro')">Financeiro</button>
-  <button>Relatórios</button>
+  <button onclick="mostrarPagina('relatorios')">Relatórios</button>
 </nav>
 
 <main>
@@ -511,6 +511,64 @@ const supabaseClient = supabase.createClient(
 <button onclick="registrarDespesa()">Registrar Despesa</button>
 </div>
 </section>
+
+  <section id="pagina-relatorios" style="display:none;">
+  <h2>Relatórios</h2>
+
+  <div class="card">
+    <h3>Consultar relatório</h3>
+
+    <div class="campo-mobile">
+      <label>Mês</label>
+      <select id="relatorioMes">
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8">Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+    </div>
+
+    <div class="campo-mobile">
+      <label>Ano</label>
+      <input id="relatorioAno" type="number" value="2026">
+    </div>
+
+    <button onclick="carregarRelatorios()">Atualizar relatório</button>
+  </div>
+
+  <div class="cards" style="margin-top:15px;">
+    <div class="card">
+      <h3>Receitas do mês</h3>
+      <div class="numero" id="relatorioReceitas">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>Despesas do mês</h3>
+      <div class="numero" id="relatorioDespesas">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+      <h3>Produção do mês</h3>
+      <div class="numero" id="relatorioProducao">0 ovos</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:15px;">
+    <h3>Clientes inadimplentes</h3>
+    <div id="relatorioInadimplentes">
+      Nenhum cliente inadimplente.
+    </div>
+  </div>
+
+</section>
 </main>
   <script>
 async function mostrarPagina(pagina) {
@@ -519,6 +577,7 @@ async function mostrarPagina(pagina) {
 document.getElementById("pagina-producao").style.display = "none";
   document.getElementById("pagina-vendas").style.display = "none";
   document.getElementById("pagina-financeiro").style.display = "none";
+  document.getElementById("pagina-relatorios").style.display = "none";
   document.getElementById("pagina-" + pagina).style.display = "block";
   document.querySelectorAll("nav button").forEach(function(botao) {
   botao.classList.remove("ativo");
@@ -549,6 +608,9 @@ if (pagina === "vendas") {
 }
   if (pagina === "financeiro") {
   await carregarFinanceiro();
+}
+  if (pagina === "relatorios") {
+  await carregarRelatorios();
 }
 }
 function calcularValorVenda() {
@@ -701,6 +763,135 @@ const resultado = recebido - totalDespesas;
 
 document.getElementById("dashboardResultado").textContent =
   "R$ " + resultado.toFixed(2).replace(".", ",");
+}
+
+    async function carregarRelatorios() {
+
+  console.log("Carregando relatórios...");
+
+
+      const mes = Number(document.getElementById("relatorioMes").value);
+const ano = Number(document.getElementById("relatorioAno").value);
+
+const inicio = `${ano}-${String(mes).padStart(2, "0")}-01`;
+
+const proximoMes = mes === 12 ? 1 : mes + 1;
+const proximoAno = mes === 12 ? ano + 1 : ano;
+
+const fim = `${proximoAno}-${String(proximoMes).padStart(2, "0")}-01`;
+
+
+// VENDAS DO MÊS
+const { data: vendasMes, error: erroVendas } = await supabaseClient
+  .from("vendas")
+  .select("data, valor_total, valor_recebido, status, cliente")
+  .gte("data", inicio)
+  .lt("data", fim);
+
+if (erroVendas) {
+  console.error(erroVendas);
+  return;
+}
+
+
+// DESPESAS DO MÊS
+const { data: despesasMes, error: erroDespesas } = await supabaseClient
+  .from("despesas")
+  .select("data, valor")
+  .gte("data", inicio)
+  .lt("data", fim);
+
+if (erroDespesas) {
+  console.error(erroDespesas);
+  return;
+}
+
+
+// PRODUÇÃO DO MÊS
+const { data: producaoMes, error: erroProducao } = await supabaseClient
+  .from("producao_ovos")
+  .select("data, quantidade")
+  .gte("data", inicio)
+  .lt("data", fim);
+
+if (erroProducao) {
+  console.error(erroProducao);
+  return;
+}
+
+
+// TOTAIS
+let totalReceitas = 0;
+let totalDespesas = 0;
+let totalProducao = 0;
+
+(vendasMes || []).forEach(venda => {
+  totalReceitas += Number(venda.valor_total) || 0;
+});
+
+(despesasMes || []).forEach(despesa => {
+  totalDespesas += Number(despesa.valor) || 0;
+});
+
+(producaoMes || []).forEach(producao => {
+  totalProducao += Number(producao.quantidade) || 0;
+});
+
+document.getElementById("relatorioReceitas").textContent =
+  "R$ " + totalReceitas.toFixed(2).replace(".", ",");
+
+document.getElementById("relatorioDespesas").textContent =
+  "R$ " + totalDespesas.toFixed(2).replace(".", ",");
+
+document.getElementById("relatorioProducao").textContent =
+  totalProducao + " ovos";
+
+
+// CLIENTES INADIMPLENTES
+const { data: vendasAbertas, error: erroAbertas } = await supabaseClient
+  .from("vendas")
+  .select("data, cliente, valor_total, valor_recebido, status")
+  .eq("status", "aberto")
+  .order("data", { ascending: true });
+
+if (erroAbertas) {
+  console.error(erroAbertas);
+  return;
+}
+
+const container = document.getElementById("relatorioInadimplentes");
+
+const hoje = new Date();
+
+const inadimplentes = (vendasAbertas || []).filter(venda => {
+  const dataVenda = new Date(venda.data + "T00:00:00");
+  const dias = Math.floor((hoje - dataVenda) / 86400000);
+
+  return dias > 30;
+});
+
+if (inadimplentes.length === 0) {
+  container.innerHTML = "Nenhum cliente inadimplente.";
+} else {
+  container.innerHTML = "";
+
+  inadimplentes.forEach(venda => {
+    const dataVenda = new Date(venda.data + "T00:00:00");
+    const dias = Math.floor((hoje - dataVenda) / 86400000);
+
+    const saldo =
+      (Number(venda.valor_total) || 0) -
+      (Number(venda.valor_recebido) || 0);
+
+    container.innerHTML += `
+      <div style="padding:12px 0; border-bottom:1px solid #ddd;">
+        <strong>${venda.cliente || "Cliente não informado"}</strong><br>
+        Valor em aberto: R$ ${saldo.toFixed(2).replace(".", ",")}<br>
+        Dias em atraso: ${dias}
+      </div>
+    `;
+  });
+}
 }
 
     async function carregarHistoricoVendas() {

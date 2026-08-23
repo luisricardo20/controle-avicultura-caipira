@@ -1765,7 +1765,43 @@ if (error) {
   alert("Erro ao registrar a destinação.");
   return;
 }
+if (destino === "chocadeira") {
+  const hoje = new Date();
 
+  const dataInicial =
+    hoje.getFullYear() + "-" +
+    String(hoje.getMonth() + 1).padStart(2, "0") + "-" +
+    String(hoje.getDate()).padStart(2, "0");
+
+  const previsao = new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate()
+  );
+
+  previsao.setDate(previsao.getDate() + 21);
+
+  const previsaoEclosao =
+    previsao.getFullYear() + "-" +
+    String(previsao.getMonth() + 1).padStart(2, "0") + "-" +
+    String(previsao.getDate()).padStart(2, "0");
+
+  const { error: erroIncubacao } = await supabaseClient
+    .from("incubacoes")
+    .insert({
+      data_inicial: dataInicial,
+      lote_id: loteId,
+      quantidade_ovos: quantidade,
+      previsao_eclosao: previsaoEclosao,
+      status: "andamento"
+    });
+
+  if (erroIncubacao) {
+    console.error(erroIncubacao);
+    alert("A destinação foi registrada, mas houve erro ao criar a incubação.");
+    return;
+  }
+}
 document.getElementById("destinoQuantidade").value = "";
 
 await atualizarResumoProducao();

@@ -1416,26 +1416,23 @@ producoes.forEach(item => {
 if (dashboardOvosHoje) {
   dashboardOvosHoje.textContent = ovosHoje;
 }
-      const hojeData = new Date();
-const mesAtual = hojeData.getMonth();
+ const hojeData = new Date();
+
 const anoAtual = hojeData.getFullYear();
+const mesAtual = String(hojeData.getMonth() + 1).padStart(2, "0");
+const prefixoMesAtual = `${anoAtual}-${mesAtual}`;
 
 let ovosMes = 0;
 const diasComProducao = new Set();
 
 producoes.forEach(item => {
-  const dataProducao = new Date(item.data);
+  const dataProducao = String(item.data || "");
 
-  if (
-    dataProducao.getMonth() === mesAtual &&
-    dataProducao.getFullYear() === anoAtual
-  ) {
+  if (dataProducao.startsWith(prefixoMesAtual)) {
     ovosMes += Number(item.quantidade) || 0;
-
-    diasComProducao.add(item.data);
+    diasComProducao.add(dataProducao);
   }
 });
-
 const mediaOvosDia =
   diasComProducao.size > 0
     ? ovosMes / diasComProducao.size

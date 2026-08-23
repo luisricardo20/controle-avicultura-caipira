@@ -212,10 +212,15 @@ const supabaseClient = supabase.createClient(
   <h2>Dashboard</h2>
 
   <div class="cards">
-    <div class="card">
-      <h3>Total de Aves</h3>
-      <div class="numero" id="dashboardTotalAves">0</div>
-    </div>
+   <div class="card">
+  <h3>Poedeiras</h3>
+  <div class="numero" id="dashboardPoedeiras">0</div>
+</div>
+
+<div class="card">
+  <h3>Frangos de Corte</h3>
+  <div class="numero" id="dashboardFrangos">0</div>
+</div>
 
     <div class="card">
       <h3>Ovos Hoje</h3>
@@ -1163,7 +1168,16 @@ const totalAves = lotes.reduce((soma, lote) => {
   return soma + (Number(lote.quantidade_atual) || 0);
 }, 0);
 
-document.getElementById("dashboardTotalAves").textContent = totalAves;
+const totalPoedeiras = lotes
+  .filter(lote => lote.tipo === "poedeiras")
+  .reduce((soma, lote) => soma + (Number(lote.quantidade_atual) || 0), 0);
+
+const totalFrangos = lotes
+  .filter(lote => lote.tipo === "frangos")
+  .reduce((soma, lote) => soma + (Number(lote.quantidade_atual) || 0), 0);
+
+document.getElementById("dashboardPoedeiras").textContent = totalPoedeiras;
+document.getElementById("dashboardFrangos").textContent = totalFrangos;
   const lista = document.getElementById("listaLotes");
 
   if (!lotes || lotes.length === 0) {

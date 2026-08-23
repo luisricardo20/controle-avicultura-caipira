@@ -1363,6 +1363,12 @@ const selectDestino = document.getElementById("destinoLote");
 
 selectDestino.innerHTML =
   '<option value="">Selecione o lote</option>';
+      const selectIncubacao = document.getElementById("incubacaoLote");
+
+if (selectIncubacao) {
+  selectIncubacao.innerHTML =
+    '<option value="">Selecione o lote</option>';
+}
  
   lotes.forEach(lote => {
     const option = document.createElement("option");
@@ -1373,7 +1379,12 @@ selectDestino.innerHTML =
 optionDestino.value = lote.id;
 optionDestino.textContent = lote.nome;
 selectDestino.appendChild(optionDestino);
-
+if (selectIncubacao) {
+  const optionIncubacao = document.createElement("option");
+  optionIncubacao.value = lote.id;
+  optionIncubacao.textContent = lote.nome;
+  selectIncubacao.appendChild(optionIncubacao);
+}
   });
 }
 

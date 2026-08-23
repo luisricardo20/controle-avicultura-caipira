@@ -475,12 +475,17 @@ const supabaseClient = supabase.createClient(
     <div class="card" style="margin-top:20px;">
   <h3>Registrar Despesa</h3>
 
+ <div class="campo-mobile">
   <label>Data</label>
   <input id="despesaData" type="date">
+</div>
 
+<div class="campo-mobile">
   <label>Descrição</label>
   <input id="despesaDescricao" type="text" placeholder="Ex.: Compra de ração">
+</div>
 
+<div class="campo-mobile">
   <label>Categoria</label>
   <select id="despesaCategoria">
     <option value="">Selecione</option>
@@ -491,16 +496,19 @@ const supabaseClient = supabase.createClient(
     <option value="aves">Compra de aves</option>
     <option value="outros">Outros</option>
   </select>
+</div>
 
+<div class="campo-mobile">
   <label>Valor (R$)</label>
   <input id="despesaValor" type="number" min="0" step="0.01">
+</div>
 
+<div class="campo-mobile">
   <label>Observações</label>
   <input id="despesaObservacoes" type="text">
+</div>
 
-  <br><br>
-
-  <button onclick="registrarDespesa()">Registrar Despesa</button>
+<button onclick="registrarDespesa()">Registrar Despesa</button>
 </div>
 </section>
 </main>

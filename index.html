@@ -1696,13 +1696,9 @@ if (containerAproveitamento) {
     return;
   }
 
-const { data: estoque } = await supabaseClient
-  .from("estoque_ovos")
-  .select("quantidade")
-  .eq("id", 1)
-  .single();
-
-const disponiveis = Number(estoque?.quantidade) || 0;
+const disponiveis = lotes.reduce((soma, lote) => {
+  return soma + (Number(lote.ovos_disponiveis) || 0);
+}, 0);
 
   document.getElementById("ovosHoje").textContent = ovosHoje;
   document.getElementById("quebradosHoje").textContent = quebradosHoje;

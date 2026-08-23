@@ -1403,7 +1403,53 @@ function atualizarPrevisaoEclosao() {
   campoPrevisao.value = data.toISOString().split("T")[0];
 }
 
-    
+async function registrarIncubacao() {
+  const dataInicial = document.getElementById("incubacaoData").value;
+  const loteId = document.getElementById("incubacaoLote").value;
+  const quantidade = Number(
+    document.getElementById("incubacaoQuantidade").value
+  );
+  const previsaoEclosao =
+    document.getElementById("incubacaoPrevisao").value;
+
+  if (!dataInicial) {
+    alert("Informe a data inicial.");
+    return;
+  }
+
+  if (!loteId) {
+    alert("Selecione o lote de origem.");
+    return;
+  }
+
+  if (!quantidade || quantidade <= 0) {
+    alert("Informe a quantidade de ovos.");
+    return;
+  }
+
+  if (!previsaoEclosao) {
+    alert("Previsão de eclosão não calculada.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("incubacoes")
+    .insert({
+      data_inicial: dataInicial,
+      lote_id: loteId,
+      quantidade_ovos: quantidade,
+      previsao_eclosao: previsaoEclosao,
+      status: "andamento"
+    });
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao registrar incubação.");
+    return;
+  }
+
+  alert("Incubação registrada com sucesso!");
+}    
 async function lancarProducao() {
   const data = document.getElementById("producaoData").value;
   const loteId = document.getElementById("producaoLote").value;

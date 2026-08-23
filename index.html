@@ -1385,8 +1385,7 @@ await atualizarResumoProducao();
 
   const { data: producoes, error: erroProducoes } = await supabaseClient
     .from("producao_ovos")
-    .select("quantidade, quebrados")
-    .select("quantidade, quebrados, lote_id")
+   .select("data, quantidade, quebrados, lote_id")
 
   if (erroProducoes) {
     console.error(erroProducoes);

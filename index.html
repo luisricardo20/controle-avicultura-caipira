@@ -552,6 +552,19 @@ const supabaseClient = supabase.createClient(
 
   <button onclick="salvarSaldosIniciais()">Salvar saldos iniciais</button>
 </div>
+    <div class="cards">
+
+  <div class="card">
+    <h3>Saldo Conta Bancária</h3>
+    <div class="numero" id="saldoBanco">R$ 0,00</div>
+  </div>
+
+  <div class="card">
+    <h3>Saldo Caixa Físico</h3>
+    <div class="numero" id="saldoCaixa">R$ 0,00</div>
+  </div>
+
+</div>
   <div class="cards">
     <div class="card">
       <h3>Vendas realizadas</h3>
@@ -693,6 +706,10 @@ document.getElementById("pagina-producao").style.display = "none";
 if (pagina === "dashboard") {
   await atualizarResumoProducao();
   await carregarFinanceiro();
+}
+  if (pagina === "financeiro") {
+  await carregarFinanceiro();
+  await carregarSaldosContas();
 }
   if (pagina === "lotes") {
     await carregarLotes();
@@ -928,6 +945,59 @@ async function salvarSaldosIniciais() {
 
   alert("Saldos iniciais salvos com sucesso!");
 }
+  async function carregarSaldosContas() {
+  const { data: contas, error: erroContas } = await supabaseClient
+    .from("contas_financeiras")
+    .select("id, nome, saldo_inicial");
+
+  if (erroContas) {
+    console.error(erroContas);
+    return;
+  }
+
+  const { data: movimentos, error: erroMovimentos } = await supabaseClient
+    .from("movimentacoes_financeiras")
+    .select("tipo, valor, conta_id");
+
+  if (erroMovimentos) {
+    console.error(erroMovimentos);
+    return;
+  }
+
+  let saldoBanco = 0;
+  let saldoCaixa = 0;
+
+  contas.forEach(conta => {
+    let saldo = Number(conta.saldo_inicial) || 0;
+
+    movimentos
+      .filter(mov => mov.conta_id === conta.id)
+      .forEach(mov => {
+        if (mov.tipo === "entrada") {
+          saldo += Number(mov.valor) || 0;
+        }
+
+        if (mov.tipo === "saida") {
+          saldo -= Number(mov.valor) || 0;
+        }
+      });
+
+    if (conta.nome === "Conta Bancária") {
+      saldoBanco = saldo;
+    }
+
+    if (conta.nome === "Caixa Físico") {
+      saldoCaixa = saldo;
+    }
+  });
+
+  document.getElementById("saldoBanco").textContent =
+    "R$ " + saldoBanco.toFixed(2).replace(".", ",");
+
+  document.getElementById("saldoCaixa").textContent =
+    "R$ " + saldoCaixa.toFixed(2).replace(".", ",");
+}
+    
     async function carregarRelatorios() {
 
   console.log("Carregando relatórios...");

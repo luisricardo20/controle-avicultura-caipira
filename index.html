@@ -1400,7 +1400,25 @@ if (selectIncubacao) {
   });
 }
 
-function atualizarPrevisaoEclosao() {
+function alterarOrigemIncubacao() {
+  const origem = document.getElementById("incubacaoOrigem").value;
+  const blocoLote = document.getElementById("blocoIncubacaoLote");
+  const blocoExterna = document.getElementById("blocoIncubacaoOrigemExterna");
+  const lote = document.getElementById("incubacaoLote");
+  const externa = document.getElementById("incubacaoOrigemExterna");
+
+  if (origem === "externa") {
+    blocoLote.style.display = "none";
+    blocoExterna.style.display = "block";
+    lote.value = "";
+  } else {
+    blocoLote.style.display = "block";
+    blocoExterna.style.display = "none";
+    externa.value = "";
+  }
+}
+    
+    function atualizarPrevisaoEclosao() {
   const dataInicial = document.getElementById("incubacaoData").value;
   const campoPrevisao = document.getElementById("incubacaoPrevisao");
 

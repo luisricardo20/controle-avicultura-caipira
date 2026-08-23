@@ -541,7 +541,17 @@ const supabaseClient = supabase.createClient(
   </section>
   <section id="pagina-financeiro" style="display:none;">
   <h2>Financeiro</h2>
+<div class="formulario">
+  <h3>Saldos das contas</h3>
 
+  <label>Conta Bancária - saldo inicial (R$)</label>
+  <input id="saldoInicialBanco" type="number" step="0.01" min="0">
+
+  <label>Caixa Físico - saldo inicial (R$)</label>
+  <input id="saldoInicialCaixa" type="number" step="0.01" min="0">
+
+  <button onclick="salvarSaldosIniciais()">Salvar saldos iniciais</button>
+</div>
   <div class="cards">
     <div class="card">
       <h3>Vendas realizadas</h3>
@@ -890,7 +900,34 @@ const resultado = recebido - totalDespesas;
 document.getElementById("dashboardResultado").textContent =
   "R$ " + resultado.toFixed(2).replace(".", ",");
 }
+async function salvarSaldosIniciais() {
+  const banco = Number(document.getElementById("saldoInicialBanco").value) || 0;
+  const caixa = Number(document.getElementById("saldoInicialCaixa").value) || 0;
 
+  const { error: erroBanco } = await supabaseClient
+    .from("contas_financeiras")
+    .update({ saldo_inicial: banco })
+    .eq("nome", "Conta Bancária");
+
+  if (erroBanco) {
+    console.error(erroBanco);
+    alert("Erro ao salvar saldo da Conta Bancária.");
+    return;
+  }
+
+  const { error: erroCaixa } = await supabaseClient
+    .from("contas_financeiras")
+    .update({ saldo_inicial: caixa })
+    .eq("nome", "Caixa Físico");
+
+  if (erroCaixa) {
+    console.error(erroCaixa);
+    alert("Erro ao salvar saldo do Caixa Físico.");
+    return;
+  }
+
+  alert("Saldos iniciais salvos com sucesso!");
+}
     async function carregarRelatorios() {
 
   console.log("Carregando relatórios...");

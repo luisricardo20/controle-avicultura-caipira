@@ -1436,6 +1436,8 @@ function alterarOrigemIncubacao() {
 async function registrarIncubacao() {
   const dataInicial = document.getElementById("incubacaoData").value;
   const loteId = document.getElementById("incubacaoLote").value;
+  const origem = document.getElementById("incubacaoOrigem").value;
+const origemExterna = document.getElementById("incubacaoOrigemExterna").value.trim();
   const quantidade = Number(
     document.getElementById("incubacaoQuantidade").value
   );
@@ -1447,10 +1449,15 @@ async function registrarIncubacao() {
     return;
   }
 
-  if (!loteId) {
-    alert("Selecione o lote de origem.");
-    return;
-  }
+if (origem === "propria" && !loteId) {
+  alert("Selecione o lote de origem.");
+  return;
+}
+
+if (origem === "externa" && !origemExterna) {
+  alert("Informe a origem externa dos ovos.");
+  return;
+}
 
   if (!quantidade || quantidade <= 0) {
     alert("Informe a quantidade de ovos.");
@@ -1465,11 +1472,14 @@ async function registrarIncubacao() {
   const { error } = await supabaseClient
     .from("incubacoes")
     .insert({
-      data_inicial: dataInicial,
-      lote_id: loteId,
-      quantidade_ovos: quantidade,
-      previsao_eclosao: previsaoEclosao,
-      status: "andamento"
+   data_inicial: dataInicial,
+lote_id: origem === "propria" ? loteId : null,
+quantidade_ovos: quantidade,
+previsao_eclosao: previsaoEclosao,
+status: "andamento",
+observacoes: origem === "externa"
+  ? "Origem externa: " + origemExterna
+  : "Produção própria"
     });
 
   if (error) {
@@ -1478,18 +1488,22 @@ async function registrarIncubacao() {
     return;
   }
 
-  const { error: erroDestino } = await supabaseClient
-  .from("destinacao_ovos")
-  .insert({
-    lote_id: loteId,
-    destino: "chocadeira",
-    quantidade: quantidade
-  });
+ if (origem === "propria") {
 
-if (erroDestino) {
-  console.error(erroDestino);
-  alert("Incubação registrada, mas houve erro ao descontar os ovos.");
-  return;
+  const { error: erroDestino } = await supabaseClient
+    .from("destinacao_ovos")
+    .insert({
+      lote_id: loteId,
+      destino: "chocadeira",
+      quantidade: quantidade
+    });
+
+  if (erroDestino) {
+    console.error(erroDestino);
+    alert("Incubação registrada, mas houve erro ao descontar os ovos.");
+    return;
+  }
+
 }
 
 await atualizarResumoProducao();

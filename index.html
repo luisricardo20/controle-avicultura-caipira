@@ -523,8 +523,9 @@ const supabaseClient = supabase.createClient(
   <label>Forma de pagamento</label>
   <select id="vendaPagamento" onchange="alternarClienteVenda()">
     <option value="">Selecione</option>
-    <option value="avista">À vista</option>
-    <option value="aprazo">A prazo</option>
+   <option value="pix">PIX</option>
+<option value="dinheiro">Dinheiro</option>
+<option value="aprazo">A prazo</option>
   </select>
 </div>
 
@@ -784,7 +785,7 @@ function calcularValorVenda() {
       valor_total: valorTotal,
       forma_pagamento: pagamento,
       status: pagamento === "aprazo" ? "aberto" : "pago",
-      valor_recebido: pagamento === "avista" ? valorTotal : 0,
+      valor_recebido: pagamento !== "aprazo" ? valorTotal : 0,
       observacoes: cliente ? "Cliente: " + cliente : null
     });
 
@@ -793,7 +794,41 @@ function calcularValorVenda() {
     alert("Erro ao registrar a venda.");
     return;
   }
+if (pagamento === "pix" || pagamento === "dinheiro") {
 
+  const nomeConta =
+    pagamento === "pix"
+      ? "Conta Bancária"
+      : "Caixa Físico";
+
+  const { data: conta, error: erroConta } = await supabaseClient
+    .from("contas_financeiras")
+    .select("id")
+    .eq("nome", nomeConta)
+    .single();
+
+  if (erroConta) {
+    console.error(erroConta);
+    alert("Venda registrada, mas houve erro ao localizar a conta financeira.");
+    return;
+  }
+
+  const { error: erroMovimento } = await supabaseClient
+    .from("movimentacoes_financeiras")
+    .insert({
+      data: data,
+      descricao: "Venda de " + produto,
+      tipo: "entrada",
+      valor: valorTotal,
+      conta_id: conta.id
+    });
+
+  if (erroMovimento) {
+    console.error(erroMovimento);
+    alert("Venda registrada, mas houve erro ao lançar no financeiro.");
+    return;
+  }
+}
   alert("Venda registrada com sucesso!");
 
 }

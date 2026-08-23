@@ -1798,7 +1798,7 @@ if (destino === "chocadeira") {
 
   if (erroIncubacao) {
     console.error(erroIncubacao);
-    alert("A destinação foi registrada, mas houve erro ao criar a incubação.");
+    alert("Erro ao criar incubação: " + erroIncubacao.message);
     return;
   }
 }

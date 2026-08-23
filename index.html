@@ -389,7 +389,7 @@ const supabaseClient = supabase.createClient(
 
     <div class="campo-mobile">
       <label>Data inicial</label>
-      <input id="incubacaoData" type="date">
+      <input id="incubacaoData" type="date" onchange="atualizarPrevisaoEclosao()">
     </div>
 <div class="campo-mobile">
   <label>Lote de origem</label>
@@ -1376,6 +1376,23 @@ selectDestino.appendChild(optionDestino);
 
   });
 }
+
+function atualizarPrevisaoEclosao() {
+  const dataInicial = document.getElementById("incubacaoData").value;
+  const campoPrevisao = document.getElementById("incubacaoPrevisao");
+
+  if (!dataInicial) {
+    campoPrevisao.value = "";
+    return;
+  }
+
+  const data = new Date(dataInicial + "T00:00:00");
+  data.setDate(data.getDate() + 21);
+
+  campoPrevisao.value = data.toISOString().split("T")[0];
+}
+
+    
 async function lancarProducao() {
   const data = document.getElementById("producaoData").value;
   const loteId = document.getElementById("producaoLote").value;

@@ -1840,7 +1840,11 @@ await atualizarResumoProducao();
   alert("Produção lançada com sucesso!");
 }
     async function atualizarResumoProducao() {
-  const hoje = new Date().toISOString().split("T")[0];
+  const agora = new Date();
+const hoje =
+  agora.getFullYear() + "-" +
+  String(agora.getMonth() + 1).padStart(2, "0") + "-" +
+  String(agora.getDate()).padStart(2, "0");
 
   const { data: producoes, error: erroProducoes } = await supabaseClient
     .from("producao_ovos")

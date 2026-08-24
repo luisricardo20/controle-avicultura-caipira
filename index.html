@@ -616,7 +616,14 @@ const supabaseClient = supabase.createClient(
   <label>Valor (R$)</label>
   <input id="despesaValor" type="number" min="0" step="0.01">
 </div>
-
+<div class="campo-mobile">
+  <label>Conta de pagamento</label>
+  <select id="despesaConta">
+    <option value="">Selecione</option>
+    <option value="banco">Conta Bancária</option>
+    <option value="caixa">Caixa Físico</option>
+  </select>
+</div>
 <div class="campo-mobile">
   <label>Observações</label>
   <input id="despesaObservacoes" type="text">
@@ -1208,7 +1215,7 @@ if (inadimplentes.length === 0) {
   const categoria = document.getElementById("despesaCategoria").value;
   const valor = Number(document.getElementById("despesaValor").value);
   const observacoes = document.getElementById("despesaObservacoes").value.trim();
-
+const contaPagamento = document.getElementById("despesaConta").value;
   if (!data) {
     alert("Informe a data da despesa.");
     return;
@@ -1223,7 +1230,10 @@ if (inadimplentes.length === 0) {
     alert("Informe o valor da despesa.");
     return;
   }
-
+if (!contaPagamento) {
+  alert("Selecione a conta de pagamento.");
+  return;
+}
   const { error } = await supabaseClient
     .from("despesas")
     .insert({
@@ -1240,13 +1250,46 @@ if (inadimplentes.length === 0) {
     return;
   }
 
+     const nomeConta = contaPagamento === "banco"
+  ? "Conta Bancária"
+  : "Caixa Físico";
+
+const { data: conta, error: erroConta } = await supabaseClient
+  .from("contas_financeiras")
+  .select("id")
+  .eq("nome", nomeConta)
+  .single();
+
+if (erroConta || !conta) {
+  console.error(erroConta);
+  alert("Despesa salva, mas ocorreu erro ao localizar a conta financeira.");
+  return;
+}
+
+const { error: erroMovimento } = await supabaseClient
+  .from("movimentacoes_financeiras")
+  .insert({
+    data: data,
+    descricao: descricao,
+    tipo: "saida",
+    valor: valor,
+    conta_id: conta.id
+  });
+
+if (erroMovimento) {
+  console.error(erroMovimento);
+  alert("Despesa salva, mas ocorreu erro ao movimentar a conta.");
+  return;
+}
+
   alert("Despesa registrada com sucesso!");
 
   document.getElementById("despesaDescricao").value = "";
   document.getElementById("despesaCategoria").value = "";
   document.getElementById("despesaValor").value = "";
   document.getElementById("despesaObservacoes").value = "";
-
+document.getElementById("despesaConta").value = "";
+await carregarSaldosContas();
   await carregarFinanceiro();
 }
     async function cadastrarLote() {

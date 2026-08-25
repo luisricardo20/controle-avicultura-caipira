@@ -1992,20 +1992,18 @@ if (containerAproveitamento) {
     })
     .join("");
 }
-  const { data: lotes, error: erroLotes } = await supabaseClient
-    .from("lotes")
-    .select("ovos_disponiveis")
-    .eq("tipo", "poedeiras")
-    .eq("ativo", true);
+ const { data: estoque, error: erroEstoque } = await supabaseClient
+  .from("estoque_ovos")
+  .select("quantidade")
+  .eq("id", 1)
+  .single();
 
-  if (erroLotes) {
-    console.error(erroLotes);
-    return;
-  }
+if (erroEstoque) {
+  console.error(erroEstoque);
+  return;
+}
 
-const disponiveis = lotes.reduce((soma, lote) => {
-  return soma + (Number(lote.ovos_disponiveis) || 0);
-}, 0);
+const disponiveis = Number(estoque.quantidade) || 0;
 
   document.getElementById("ovosHoje").textContent = ovosHoje;
   document.getElementById("quebradosHoje").textContent = quebradosHoje;

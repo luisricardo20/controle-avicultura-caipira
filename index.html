@@ -241,7 +241,12 @@ const supabaseClient = supabase.createClient(
       <h3>Contas a Receber</h3>
       <div class="numero">R$ 0,00</div>
     </div>
-
+<div class="card">
+  <h3>Clientes Devendo</h3>
+  <div id="dashboardClientesDevendo">
+    Nenhum cliente devendo.
+  </div>
+</div>
     <div class="card">
       <h3>Resultado</h3>
      <div class="numero" id="dashboardResultado">R$ 0,00</div>
@@ -960,6 +965,70 @@ const resultado = recebido - totalDespesas;
 
 document.getElementById("dashboardResultado").textContent =
   "R$ " + resultado.toFixed(2).replace(".", ",");
+      const { data: vendasAbertas, error: erroVendasAbertas } = await supabaseClient
+  .from("vendas")
+  .select("data, valor_total, observacoes, forma_pagamento, status")
+  .eq("forma_pagamento", "aprazo")
+  .eq("status", "aberto")
+  .order("data", { ascending: true });
+
+const painelDevedores = document.getElementById("dashboardClientesDevendo");
+
+if (!erroVendasAbertas && painelDevedores) {
+
+  if (!vendasAbertas || vendasAbertas.length === 0) {
+    painelDevedores.innerHTML = "Nenhum cliente devendo.";
+  } else {
+
+    const clientes = {};
+
+    vendasAbertas.forEach(venda => {
+
+      let nome = "Cliente não informado";
+
+      if (venda.observacoes && venda.observacoes.includes("Cliente:")) {
+        nome = venda.observacoes
+          .replace("Cliente:", "")
+          .trim();
+      }
+
+      if (!clientes[nome]) {
+        clientes[nome] = {
+          valor: 0,
+          dataMaisAntiga: venda.data
+        };
+      }
+
+      clientes[nome].valor += Number(venda.valor_total) || 0;
+
+      if (venda.data < clientes[nome].dataMaisAntiga) {
+        clientes[nome].dataMaisAntiga = venda.data;
+      }
+    });
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    painelDevedores.innerHTML = Object.entries(clientes)
+      .map(([nome, dados]) => {
+
+        const dataVenda = new Date(dados.dataMaisAntiga + "T00:00:00");
+
+        const dias = Math.floor(
+          (hoje - dataVenda) / (1000 * 60 * 60 * 24)
+        );
+
+        return `
+          <div style="margin-bottom:12px;">
+            <strong>${nome}</strong><br>
+            R$ ${dados.valor.toFixed(2).replace(".", ",")} —
+            devendo há ${dias} ${dias === 1 ? "dia" : "dias"}
+          </div>
+        `;
+      })
+      .join("");
+  }
+}
 }
 async function salvarSaldosIniciais() {
   const banco = Number(document.getElementById("saldoInicialBanco").value) || 0;

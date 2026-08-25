@@ -828,45 +828,41 @@ function calcularValorVenda() {
     alert("Erro ao registrar a venda.");
     return;
   }
-     if (produto === "ovos") {
+  if (produto === "ovos") {
 
-  const { data: lotesOvos, error: erroBuscaOvos } = await supabaseClient
-    .from("lotes")
-    .select("id, ovos_disponiveis")
-    .eq("tipo", "poedeiras")
-    .eq("ativo", true);
+  const { data: estoqueAtual, error: erroBuscaEstoque } = await supabaseClient
+    .from("estoque_ovos")
+    .select("quantidade")
+    .eq("id", 1)
+    .single();
 
-  if (erroBuscaOvos) {
-    console.error(erroBuscaOvos);
-    alert("Venda registrada, mas houve erro ao atualizar o estoque de ovos.");
+  if (erroBuscaEstoque) {
+    console.error(erroBuscaEstoque);
+    alert("Venda registrada, mas houve erro ao consultar o estoque de ovos.");
     return;
   }
 
-  let restante = quantidade;
+  const saldoAtual = Number(estoqueAtual.quantidade) || 0;
 
-  for (const lote of lotesOvos) {
+  if (quantidade > saldoAtual) {
+    alert("Quantidade vendida maior que o estoque disponível.");
+    return;
+  }
 
-    if (restante <= 0) break;
+  const novoSaldo = saldoAtual - quantidade;
 
-    const saldoLote = Number(lote.ovos_disponiveis) || 0;
+  const { error: erroAtualizarEstoque } = await supabaseClient
+    .from("estoque_ovos")
+    .update({
+      quantidade: novoSaldo,
+      atualizado_em: new Date().toISOString()
+    })
+    .eq("id", 1);
 
-    if (saldoLote <= 0) continue;
-
-    const retirar = Math.min(saldoLote, restante);
-    const novoSaldo = saldoLote - retirar;
-
-    const { error: erroAtualizarOvos } = await supabaseClient
-      .from("lotes")
-      .update({ ovos_disponiveis: novoSaldo })
-      .eq("id", lote.id);
-
-    if (erroAtualizarOvos) {
-      console.error(erroAtualizarOvos);
-      alert("Venda registrada, mas houve erro ao descontar os ovos.");
-      return;
-    }
-
-    restante -= retirar;
+  if (erroAtualizarEstoque) {
+    console.error(erroAtualizarEstoque);
+    alert("Venda registrada, mas houve erro ao descontar os ovos do estoque.");
+    return;
   }
 }
 if (pagamento === "pix" || pagamento === "dinheiro") {

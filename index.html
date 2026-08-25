@@ -1953,15 +1953,19 @@ if (dashboardMediaOvosDia) {
     mediaOvosDia.toFixed(1);
 }
 const producaoPorLote = {};
+const diasPorLote = {};
 
 producoes.forEach(item => {
   const loteId = item.lote_id;
+  const data = item.data;
 
   if (!producaoPorLote[loteId]) {
     producaoPorLote[loteId] = 0;
+    diasPorLote[loteId] = new Set();
   }
 
   producaoPorLote[loteId] += Number(item.quantidade) || 0;
+  diasPorLote[loteId].add(data);
 });
 
 const containerAproveitamento =
@@ -1972,11 +1976,12 @@ if (containerAproveitamento) {
   containerAproveitamento.innerHTML = lotesResumo
     .map(lote => {
 
-      const aves = Number(lote.quantidade_atual) || 0;
-      const ovos = producaoPorLote[lote.id] || 0;
+   const aves = Number(lote.quantidade_atual) || 0;
+const ovos = producaoPorLote[lote.id] || 0;
+const dias = diasPorLote[lote.id] ? diasPorLote[lote.id].size : 0;
 
-      const percentual =
-        aves > 0 ? (ovos / aves) * 100 : 0;
+const percentual =
+  aves > 0 && dias > 0 ? (ovos / dias / aves) * 100 : 0;
 
       return `
         <div style="margin-bottom:10px;">

@@ -828,6 +828,47 @@ function calcularValorVenda() {
     alert("Erro ao registrar a venda.");
     return;
   }
+     if (produto === "ovos") {
+
+  const { data: lotesOvos, error: erroBuscaOvos } = await supabaseClient
+    .from("lotes")
+    .select("id, ovos_disponiveis")
+    .eq("tipo", "poedeiras")
+    .eq("ativo", true);
+
+  if (erroBuscaOvos) {
+    console.error(erroBuscaOvos);
+    alert("Venda registrada, mas houve erro ao atualizar o estoque de ovos.");
+    return;
+  }
+
+  let restante = quantidade;
+
+  for (const lote of lotesOvos) {
+
+    if (restante <= 0) break;
+
+    const saldoLote = Number(lote.ovos_disponiveis) || 0;
+
+    if (saldoLote <= 0) continue;
+
+    const retirar = Math.min(saldoLote, restante);
+    const novoSaldo = saldoLote - retirar;
+
+    const { error: erroAtualizarOvos } = await supabaseClient
+      .from("lotes")
+      .update({ ovos_disponiveis: novoSaldo })
+      .eq("id", lote.id);
+
+    if (erroAtualizarOvos) {
+      console.error(erroAtualizarOvos);
+      alert("Venda registrada, mas houve erro ao descontar os ovos.");
+      return;
+    }
+
+    restante -= retirar;
+  }
+}
 if (pagamento === "pix" || pagamento === "dinheiro") {
 
   const nomeConta =

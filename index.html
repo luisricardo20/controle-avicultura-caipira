@@ -251,6 +251,10 @@ const supabaseClient = supabase.createClient(
       <h3>Resultado</h3>
      <div class="numero" id="dashboardResultado">R$ 0,00</div>
     </div>
+    <div class="card">
+    <h3>Resultado de Caixa</h3>
+    <div class="numero" id="dashboardResultadoCaixa">R$ 0,00</div>
+</div>
   </div>
    <div class="card" style="margin-top:15px;">
   <h3>Aproveitamento por Lote</h3>
@@ -961,10 +965,14 @@ despesas.forEach(despesa => {
       document.getElementById("financeiroDespesas").textContent =
   "R$ " + totalDespesas.toFixed(2).replace(".", ",");
 
-const resultado = recebido - totalDespesas;
+const resultado = totalVendas - totalDespesas;
+const resultadoCaixa = recebido - totalDespesas;
 
 document.getElementById("dashboardResultado").textContent =
   "R$ " + resultado.toFixed(2).replace(".", ",");
+
+document.getElementById("dashboardResultadoCaixa").textContent =
+  "R$ " + resultadoCaixa.toFixed(2).replace(".", ",");
       const { data: vendasAbertas, error: erroVendasAbertas } = await supabaseClient
   .from("vendas")
   .select("data, valor_total, observacoes, forma_pagamento, status")

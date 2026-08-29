@@ -1310,30 +1310,65 @@ if (inadimplentes.length === 0) {
     `;
   }).join("");
 }
-    async function marcarVendaComoPaga(id, valorTotal) {
-  const confirmar =
-    confirm("Confirmar o recebimento desta venda?");
+  async function marcarVendaComoPaga(id, valorTotal) {
 
+  const forma = prompt(
+    "Como o cliente pagou?\n\n1 = PIX\n2 = Dinheiro"
+  );
+
+  if (forma !== "1" && forma !== "2") {
+    alert("Escolha 1 para PIX ou 2 para Dinheiro.");
+    return;
+  }
+
+  const confirmar = confirm("Confirmar o recebimento desta venda?");
   if (!confirmar) return;
 
-  const { error } = await supabaseClient
+  const formaPagamento = forma === "1" ? "pix" : "dinheiro";
+  const contaId = forma === "1" ? 1 : 2;
+
+  // Atualiza a venda para paga
+  const { error: erroVenda } = await supabaseClient
     .from("vendas")
     .update({
       status: "pago",
-      valor_recebido: valorTotal
+      valor_recebido: valorTotal,
+      forma_pagamento: formaPagamento
     })
     .eq("id", id);
 
-  if (error) {
-    console.error(error);
-    alert("Erro ao registrar o recebimento.");
+  if (erroVenda) {
+    console.error(erroVenda);
+    alert("Erro ao registrar o pagamento.");
+    return;
+  }
+
+  // Registra a entrada no financeiro
+  const { error: erroMovimento } = await supabaseClient
+    .from("movimentacoes_financeiras")
+    .insert({
+      data: new Date().toISOString().split("T")[0],
+      descricao: "Recebimento de venda a prazo",
+      tipo: "entrada",
+      valor: valorTotal,
+      conta_id: contaId,
+      venda_id: id
+    });
+
+  if (erroMovimento) {
+    console.error(erroMovimento);
+    alert("A venda foi marcada como paga, mas houve erro ao lançar no financeiro.");
     return;
   }
 
   await carregarHistoricoVendas();
   await carregarFinanceiro();
 
-  alert("Pagamento registrado com sucesso!");
+  alert(
+    formaPagamento === "pix"
+      ? "Pagamento recebido via PIX e lançado na Conta Bancária."
+      : "Pagamento recebido em Dinheiro e lançado no Caixa Físico."
+  );
 }
    async function registrarDespesa() {
 

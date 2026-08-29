@@ -239,7 +239,7 @@ const supabaseClient = supabase.createClient(
 
     <div class="card">
       <h3>Contas a Receber</h3>
-      <div class="numero">R$ 0,00</div>
+      <div class="numero" id="dashboardContasReceber">R$ 0,00</div>
     </div>
 <div class="card">
   <h3>Clientes Devendo</h3>
@@ -1005,7 +1005,20 @@ if (!erroVendasAbertas && painelDevedores) {
         clientes[nome].dataMaisAntiga = venda.data;
       }
     });
+const totalContasReceber = vendasAbertas.reduce(
+  (soma, venda) => soma + (Number(venda.valor_total) || 0),
+  0
+);
 
+const painelContasReceber = document.getElementById("dashboardContasReceber");
+
+if (painelContasReceber) {
+  painelContasReceber.textContent =
+    totalContasReceber.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+}
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
